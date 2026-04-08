@@ -2,108 +2,103 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOID SWIFT | STORE</title>
+    <title>VOID SWIFT | النظام المتكامل</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        :root { --pink: #d42a8b; --purple: #7b2cbf; --bg: #0f051d; --panel: #1a0b2e; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); color: white; overflow-x: hidden; }
-        #canvas { position: fixed; inset: 0; z-index: -1; }
+        :root { --pink: #d42a8b; --purple: #7b2cbf; --bg: #0f051d; --card: #1a0b2e; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
+        body { background:var(--bg); color:white; }
+        
+        /* الهيدر */
+        header { position:fixed; top:0; width:100%; padding:15px 5%; background:rgba(26, 11, 46, 0.9); display:none; justify-content:space-between; align-items:center; z-index:1000; border-bottom:1px solid var(--pink); }
+        nav button { background:none; border:none; color:white; margin:0 10px; cursor:pointer; font-weight:700; }
 
-        header { position: fixed; top: 0; width: 100%; padding: 15px 8%; display: none; justify-content: space-between; align-items: center; background: rgba(15, 5, 29, 0.9); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 2px solid var(--pink); }
-        section { display: none; padding: 120px 8% 50px; min-height: 100vh; flex-direction: column; align-items: center; }
-        .active { display: flex; animation: fadeIn 0.4s ease; }
+        section { display:none; padding:100px 5% 50px; min-height:100vh; flex-direction:column; align-items:center; }
+        .active { display:flex; animation: fadeIn 0.5s ease; }
 
-        /* تنسيق كرت التسجيل */
-        .auth-card { background: var(--panel); border: 1px solid var(--pink); padding: 30px; border-radius: 20px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 0 20px rgba(212, 42, 139, 0.2); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #0b0416; border: 1px solid #333; color: white; border-radius: 10px; text-align: right; }
-        .btn-main { background: linear-gradient(90deg, var(--pink), var(--purple)); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 900; width: 100%; margin-top: 15px; cursor: pointer; }
+        .card { background:var(--card); border:1px solid #333; padding:25px; border-radius:20px; width:100%; max-width:900px; margin-bottom:20px; }
+        input, textarea { width:100%; padding:12px; margin:10px 0; background:#0b0416; border:1px solid var(--pink); color:white; border-radius:10px; }
+        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:12px 25px; border-radius:10px; font-weight:900; cursor:pointer; width:100%; }
 
-        /* صفحة المنتج الطولية */
-        .product-container { display: flex; flex-direction: column; width: 100%; max-width: 1100px; gap: 30px; }
-        .product-main { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
-        .p-img img { width: 100%; border-radius: 20px; border: 2px solid var(--purple); }
-        .p-content { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid #333; }
+        /* التقييمات */
+        .rev-box { display:flex; gap:15px; overflow-x:auto; width:100%; padding:10px; }
+        .rev-card { min-width:250px; background:var(--purple); padding:15px; border-radius:15px; text-align:center; }
 
-        /* كروت التقاييم */
-        .rev-wrapper { display: flex; gap: 20px; overflow-x: auto; width: 100%; padding: 20px 0; scrollbar-width: none; }
-        .rev-item { min-width: 300px; background: #4a148c; border-radius: 20px; padding: 20px; text-align: center; border: 2px solid var(--purple); }
-        .rev-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; margin-bottom: 10px; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @media (max-width: 768px) { .product-main { grid-template-columns: 1fr; } }
+        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
     </style>
 </head>
 <body>
-<canvas id="canvas"></canvas>
 
-<header id="mainHeader">
-    <div style="font-size:24px; font-weight:900; color:var(--pink);">VOID <span style="color:white">SWIFT</span></div>
-    <div id="userDisplayName" style="color:var(--purple); font-weight:900;"></div>
+<header id="navbar">
+    <div style="font-weight:900; color:var(--pink);">VOID SWIFT</div>
+    <nav>
+        <button onclick="show('home')">الرئيسية</button>
+        <button onclick="show('policy')">السياسات</button>
+        <button onclick="show('support')">الدعم</button>
+    </nav>
 </header>
 
-<section id="auth-section" class="active" style="justify-content:center;">
-    <div class="auth-card">
-        <h2 style="margin-bottom:20px;">إنشاء حساب / دخول</h2>
-        <input type="text" id="regNick" placeholder="الاسم المستعار">
-        <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
-        <input type="password" id="regPass" placeholder="كلمة المرور (6 خانات فأكثر)">
-        <label style="display:flex; align-items:center; gap:10px; font-size:12px; margin-top:10px; cursor:pointer;">
-            <input type="checkbox" id="regTerms" style="width:auto;"> أوافق على الشروط والقوانين والسياسات
-        </label>
-        <button onclick="handleAuth()" class="btn-main">دخول آمن للمتجر</button>
+<section id="auth-page" class="active" style="justify-content:center;">
+    <div class="card" style="max-width:400px; text-align:center;">
+        <h2>تسجيل دخول المتجر</h2>
+        <input type="text" id="uNick" placeholder="اسمك المستعار">
+        <input type="email" id="uEmail" placeholder="الإيميل">
+        <input type="password" id="uPass" placeholder="الباسورد (6+ أرقام)">
+        <button onclick="handleAuth()" class="btn-main">دخول آمن</button>
     </div>
 </section>
 
-<section id="home-section">
-    <h2 style="margin-bottom:30px; width:100%; text-align:right;">آراء أصدقائنا 3></h2>
-    <div class="rev-wrapper" id="reviewsContainer">
-        <div class="rev-item"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=1" class="rev-avatar"><h4>عدي الحربي</h4><p>⭐⭐⭐⭐⭐</p><p>جبّار يا إخوان سهولة في التعامل!</p></div>
-    </div>
-
-    <div class="auth-card" style="margin-top:50px; cursor:pointer;" onclick="showPage('product-section')">
+<section id="home-page">
+    <div class="card" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
         <img src="https://i.imgur.com/K3pWpXG.png" style="width:100%; border-radius:15px;">
-        <h3 style="margin-top:15px;">DEATH STRANDING 2</h3>
-        <p style="color:var(--pink); font-weight:900;">32.00 SAR</p>
+        <div>
+            <h1 style="color:var(--pink);">DEATH STRANDING 2</h1>
+            <p>السعر: 32.00 SAR</p>
+            <hr style="margin:15px 0; opacity:0.2;">
+            <p>حساب أصلي، ضمان كامل، تسليم فوري ✅</p>
+            <input type="text" id="revTxt" placeholder="أضف تقييمك هنا..">
+            <button onclick="addReview()" class="btn-main">إرسال التقييم</button>
+        </div>
+    </div>
+    <h3 style="width:100%; margin-top:30px;">آراء العملاء:</h3>
+    <div class="rev-box" id="revList"></div>
+</section>
+
+<section id="policy-page">
+    <div class="card">
+        <h2>سياسة الاسترجاع والاستخدام</h2>
+        <ul style="margin-top:20px; list-style:inside; line-height:2;">
+            <li>لا يحق للعميل طلب استرجاع المبلغ بعد استلام بيانات الحساب.</li>
+            <li>المتجر غير مسؤول عن إهمال العميل في حماية بياناته.</li>
+            <li>يمنع استخدام الحساب في أكثر من جهاز في وقت واحد.</li>
+        </ul>
     </div>
 </section>
 
-<section id="product-section">
-    <div class="product-container">
-        <div class="product-main">
-            <div class="p-content">
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                    <span style="color:#00ff64;">● متوفر الآن</span>
-                    <span style="color:grey;">99 كمية متبقية</span>
-                </div>
-                <h1 style="color:white; margin-bottom:10px;">DEATH STRANDING 2: ON THE BEACH</h1>
-                <div style="font-size:32px; font-weight:900; color:var(--pink); margin-bottom:20px;">32 SAR <del style="font-size:16px; color:grey;">299 SAR</del></div>
-                
-                <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:15px; margin-bottom:20px; line-height:1.8; font-size:14px;">
-                    <p>🔥 متجر فويد - الأقوى في الأسعار والأسرع في التسليم!</p>
-                    <p>✅ حساب أصلي 100% - التسليم فوري بعد الدفع.</p>
-                    <p>✅ ضمان كامل ضد البان والمشاكل الفنية.</p>
-                </div>
-
-                <input type="text" id="newReviewText" placeholder="اكتب رأيك هنا للجميع..">
-                <button onclick="postReview()" class="btn-main">نشر التقييم</button>
-                <button onclick="showPage('home-section')" style="background:none; border:none; color:grey; width:100%; margin-top:15px; cursor:pointer;">العودة للرئيسية</button>
-            </div>
-            <div class="p-img">
-                <img src="https://i.imgur.com/K3pWpXG.png" alt="Product Image">
-                <p style="text-align:center; margin-top:15px; color:grey;">موثقين من وزارة التجارة ✅</p>
-            </div>
+<section id="support-page">
+    <div class="card">
+        <h2>الأسئلة الشائعة & الدعم</h2>
+        <div style="margin-top:20px;">
+            <details style="margin-bottom:10px;">
+                <summary style="cursor:pointer; color:var(--pink); font-weight:700;">كيف أستلم الطلب؟</summary>
+                <p>يتم إرسال بيانات الحساب فورياً بعد الدفع إلى بريدك الإلكتروني.</p>
+            </details>
+            <details>
+                <summary style="cursor:pointer; color:var(--pink); font-weight:700;">هل الحساب رسمي؟</summary>
+                <p>نعم، جميع الحسابات أصلية ومضمونة 100%.</p>
+            </details>
         </div>
+        <hr style="margin:20px 0; opacity:0.2;">
+        <h3>تواصل معنا:</h3>
+        <p>واتساب: 966XXXXXXXX+</p>
     </div>
 </section>
 
 <script>
-    // إعدادات Firebase من صورك الشخصية
     const firebaseConfig = {
         apiKey: "AIzaSyCwVnf3CXX2d8W18NPATsqkLhmBabCgaB4",
         authDomain: "swiftvoid-3e5a6.firebaseapp.com",
@@ -117,79 +112,58 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
-    let currentUserName = "";
+    let currentNick = "";
 
     async function handleAuth() {
-        const nick = document.getElementById('regNick').value;
-        const email = document.getElementById('regEmail').value;
-        const pass = document.getElementById('regPass').value;
-        const terms = document.getElementById('regTerms').checked;
-
-        if(!nick || !email || !pass || !terms) return alert("فضلاً املأ البيانات ووافق على الشروط");
+        const n = document.getElementById('uNick').value;
+        const e = document.getElementById('uEmail').value;
+        const p = document.getElementById('uPass').value;
+        if(!n || !e || !p) return alert("املا كل البيانات");
 
         try {
-            const res = await auth.createUserWithEmailAndPassword(email, pass);
-            await db.ref('users/' + res.user.uid).set({ nickname: nick });
-            initApp(nick);
-        } catch (error) {
+            const res = await auth.createUserWithEmailAndPassword(e, p);
+            await db.ref('users/'+res.user.uid).set({nickname: n});
+            start(n);
+        } catch(err) {
             try {
-                const res = await auth.signInWithEmailAndPassword(email, pass);
-                const snap = await db.ref('users/' + res.user.uid).once('value');
-                initApp(snap.val().nickname);
-            } catch (e) { alert("تأكد من تفعيل Email/Password في Firebase ومن صحة البيانات"); }
+                const res = await auth.signInWithEmailAndPassword(e, p);
+                const snap = await db.ref('users/'+res.user.uid).once('value');
+                start(snap.val().nickname);
+            } catch(err2) { alert("خطأ في الدخول، تأكد من البيانات"); }
         }
     }
 
-    function initApp(name) {
-        currentUserName = name;
-        document.getElementById('auth-section').classList.remove('active');
-        document.getElementById('home-section').classList.add('active');
-        document.getElementById('mainHeader').style.display = 'flex';
-        document.getElementById('userDisplayName').innerText = name;
-        syncReviews();
+    function start(name) {
+        currentNick = name;
+        document.getElementById('auth-page').classList.remove('active');
+        document.getElementById('navbar').style.display = 'flex';
+        show('home');
+        loadReviews();
     }
 
-    function showPage(pageId) {
+    function show(id) {
         document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        window.scrollTo(0,0);
+        document.getElementById(id + '-page').classList.add('active');
     }
 
-    function syncReviews() {
-        db.ref('store_reviews').on('value', (snap) => {
-            const data = snap.val();
-            const container = document.getElementById('reviewsContainer');
-            let html = `<div class="rev-item"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=1" class="rev-avatar"><h4>عدي الحربي</h4><p>⭐⭐⭐⭐⭐</p><p>جبّار يا إخوان سهولة في التعامل!</p></div>`;
-            if(data) {
-                Object.values(data).reverse().forEach(r => {
-                    html += `<div class="rev-item"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${r.user}" class="rev-avatar"><h4>${r.user}</h4><p>⭐⭐⭐⭐⭐</p><p>${r.text}</p></div>`;
+    function loadReviews() {
+        db.ref('reviews').on('value', snap => {
+            const list = document.getElementById('revList');
+            list.innerHTML = "";
+            if(snap.val()) {
+                Object.values(snap.val()).forEach(r => {
+                    list.innerHTML += `<div class="rev-card"><h4>${r.user}</h4><p>⭐⭐⭐⭐⭐</p><p>${r.text}</p></div>`;
                 });
             }
-            container.innerHTML = html;
         });
     }
 
-    function postReview() {
-        const txt = document.getElementById('newReviewText').value;
-        if(!txt) return;
-        db.ref('store_reviews').push({ user: currentUserName, text: txt });
-        document.getElementById('newReviewText').value = "";
-        alert("تم نشر تقييمك بنجاح! ✅");
+    function addReview() {
+        const t = document.getElementById('revTxt').value;
+        if(!t) return;
+        db.ref('reviews').push({user: currentNick, text: t});
+        document.getElementById('revTxt').value = "";
     }
-
-    // تأثير خلفية النجوم
-    const canvas = document.getElementById('canvas'); const ctx = canvas.getContext('2d');
-    let stars = [];
-    function setup() {
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        for(let i=0; i<150; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.5, s:Math.random()*0.5});
-    }
-    function animate() {
-        ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle="white";
-        stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill(); s.y-=s.s; if(s.y<0) s.y=canvas.height; });
-        requestAnimationFrame(animate);
-    }
-    setup(); animate();
 </script>
 </body>
 </html>
