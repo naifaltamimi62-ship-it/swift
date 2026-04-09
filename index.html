@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
@@ -16,101 +17,134 @@
         body { background:var(--bg); color:white; overflow-x:hidden; }
         
         header { position:fixed; top:0; width:100%; padding:15px 5%; background:rgba(26, 11, 46, 0.95); display:none; justify-content:space-between; align-items:center; z-index:1000; border-bottom:2px solid var(--pink); }
-        .logo { font-size:24px; font-weight:900; color:var(--pink); }
+        .nav-icons { display: flex; gap: 20px; align-items: center; }
+        .cart-icon { position: relative; cursor: pointer; font-size: 20px; }
+        .cart-count { position: absolute; top: -10px; right: -10px; background: var(--pink); color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; }
 
         section { display:none; padding:120px 5% 50px; min-height:100vh; flex-direction:column; align-items:center; }
         .active { display:flex; animation: fadeIn 0.5s ease; }
 
         .card { background:var(--card); border:1px solid #333; padding:30px; border-radius:25px; width:100%; max-width:1000px; margin-bottom:20px; }
-        input { width:100%; padding:14px; margin:10px 0; background:#0b0416; border:1px solid #444; color:white; border-radius:12px; text-align:right; }
-        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:14px 30px; border-radius:12px; font-weight:900; cursor:pointer; width: 100%; }
+        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:12px 25px; border-radius:12px; font-weight:900; cursor:pointer; transition: 0.3s; }
+        
+        /* أيقونة الدسكورد تحت يمين */
+        .discord-float { position: fixed; bottom: 30px; right: 30px; background: #5865F2; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 2000; cursor: pointer; transition: 0.3s; }
+        .discord-float:hover { transform: scale(1.1); background: var(--purple); }
 
-        .rev-box { display:flex; gap:20px; overflow-x:auto; width:100%; padding:20px 0; scrollbar-width: none; }
-        .rev-card { min-width:300px; background:linear-gradient(135deg, #2a124a, #1a0b2e); padding:20px; border-radius:20px; border:1px solid rgba(255,255,255,0.05); }
+        /* تفاصيل المنتج */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 100%; }
+        .price-tag { font-size: 32px; font-weight: 900; color: var(--pink); }
+        .old-price { font-size: 18px; color: #666; text-decoration: line-through; margin-left: 10px; }
 
-        /* تذييل الصفحة (Footer) */
-        footer { background: #0a0414; padding: 50px 5%; border-top: 1px solid #222; margin-top: 50px; display: none; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: right; }
-        .footer-grid h4 { color: var(--pink); margin-bottom: 20px; }
-        .footer-grid p, .footer-grid a { color: #aaa; text-decoration: none; font-size: 14px; line-height: 1.8; display: block; }
+        /* السياسات والفوتر */
+        footer { background: #0a0414; padding: 60px 5%; border-top: 1px solid #222; width: 100%; }
+        .footer-link { color: #aaa; text-decoration: none; transition: 0.3s; cursor: pointer; display: block; margin: 10px 0; }
+        .footer-link:hover, .footer-link:active { color: var(--purple); font-weight: bold; }
 
+        /* قائمة الأسئلة */
+        .faq-item { background: #0b0416; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; width: 100%; }
+        
         @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
     </style>
 </head>
 <body>
 
 <header id="navbar">
-    <div class="logo">VOID <span style="color:white">SWIFT</span></div>
-    <div id="user-info" style="font-size:14px; color:var(--pink);"></div>
+    <div style="font-weight:900; color:var(--pink); font-size: 22px;">VOID SWIFT</div>
+    <div class="nav-icons">
+        <div class="cart-icon" onclick="alert('السلة تحتوي على المنتج جاهز للدفع!')">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count" id="cartCount">0</span>
+        </div>
+        <div id="user-info" style="font-size:14px; color:white;"></div>
+    </div>
 </header>
 
+<a href="https://discord.gg/YOUR_LINK" class="discord-float" target="_blank">
+    <i class="fab fa-discord"></i>
+</a>
+
 <section id="auth-page" class="active" style="justify-content:center;">
-    <div class="card" style="max-width:420px; text-align:center; border: 1px solid var(--pink);">
-        <h2 style="margin-bottom:10px;">VOID SWIFT</h2>
-        <p style="color:grey; font-size:12px; margin-bottom:25px;">تسجيل الدخول لمتجر السكربتات والأدوات</p>
-        <input type="text" id="uNick" placeholder="الاسم المستعار">
+    <div class="card" style="max-width:400px; text-align:center;">
+        <h2 style="margin-bottom:20px;">VOID SWIFT</h2>
         <input type="email" id="uEmail" placeholder="البريد الإلكتروني">
         <input type="password" id="uPass" placeholder="كلمة المرور">
-        <button onclick="handleAuth()" class="btn-main">دخول آمن</button>
+        <button onclick="handleAuth()" class="btn-main" style="width:100%;">دخول للمتجر</button>
     </div>
 </section>
 
 <section id="home-page">
-    <div class="card" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:40px;">
-        <img src="https://i.imgur.com/K3pWpXG.png" style="width:100%; border-radius:20px; border: 1px solid var(--purple);">
-        <div>
-            <div style="color:#00ff64; font-size:12px; margin-bottom:10px; font-weight:700;">● تحديث V2.4.1 جاهز</div>
-            <h1 style="font-size:35px; margin-bottom:10px;">XENO EXECUTOR</h1>
-            <div style="font-size:30px; font-weight:900; color:var(--pink); margin-bottom:20px;">مجاني / بريميوم</div>
-            
-            <h3 style="color:var(--purple); margin-bottom:10px;">الوصف:</h3>
-            <p style="color:#ccc; font-size:14px; line-height:1.8;">
-                يعتبر Xeno Executor الأقوى حالياً في عالم روبلوكس، حيث يوفر لك بيئة تنفيذ سكربتات آمنة بنسبة 100% مع تخطي كامل لجميع أنظمة الحماية (By-passing Hyperion). يتميز البرنامج بواجهة مستخدم سهلة وسرعة تنفيذ خرافية للسكربتات المعقدة مثل Auto-farm و Kill-aura. تم تطويره ليكون الأخف على موارد الجهاز ولا يسبب هبوط في الفريمات. يدعم جميع الألعاب الشهيرة مثل Blox Fruits و Pet Simulator 99.
-            </p>
-            
-            <div style="margin-top:20px; background:#0b0416; padding:15px; border-radius:15px; border:1px solid #333;">
-                <input type="text" id="revTxt" placeholder="أضف تقييمك للأداة..">
-                <button onclick="addReview()" class="btn-main">إرسال التقييم</button>
+    <div class="product-grid">
+        <div class="card" style="text-align: center;">
+            <img src="https://i.imgur.com/K3pWpXG.png" style="width:100%; border-radius:15px; margin-bottom:15px;">
+            <h3>XENO EXECUTOR</h3>
+            <div style="margin: 10px 0;">
+                <span class="price-tag">0.0 SAR</span>
+                <span class="old-price">22 SAR</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="show('details')" class="btn-main" style="flex: 1;">عرض التفاصيل</button>
+                <button onclick="addToCart()" class="btn-main" style="flex: 1; background: #222;"><i class="fas fa-plus"></i> للسلة</button>
             </div>
         </div>
     </div>
-
-    <div class="card" style="margin-top:20px;">
-        <h3 style="color:var(--pink); margin-bottom:15px;">كيف يشتغل البرنامج؟</h3>
-        <p style="color:#ddd; line-height:2;">
-            1. قم بتحميل ملف Xeno من الرابط الذي سيصلك بعد التسجيل.<br>
-            2. تأكد من إغلاق برنامج الحماية مؤقتاً لضمان عدم حذف ملفات الحماية الخاصة بالسكربت.<br>
-            3. افتح روبلوكس ثم قم بتشغيل Xeno Executor كمسؤول (Run as Admin).<br>
-            4. اضغط على زر "Attach" وانتظر ظهور الرسالة الخضراء.<br>
-            5. الصق السكربت الخاص بك في المربع واضغط "Execute".<br>
-            6. استمتع باللعب والتحكم الكامل باللعبة!
-        </p>
-    </div>
-
-    <h3 style="width:100%; max-width:1000px; margin-top:40px; text-align:right;">تقييمات مستخدمي Xeno:</h3>
-    <div class="rev-box" id="revList" style="max-width:1000px;"></div>
 </section>
 
-<footer id="footer">
-    <div class="footer-grid">
-        <div>
-            <h4>روابط تهمك</h4>
-            <p>سياسة الاستخدام</p>
-            <p>سياسة الاستبدال والاسترجاع</p>
-            <p>قوانين المتجر</p>
-        </div>
-        <div>
-            <h4>الدعم الفني</h4>
-            <p>الإيميل: swiftsa123a@gmail.com</p>
-            <p>الدسكورد: [رابط الدسكورد الخاص بك]</p>
-        </div>
-        <div>
-            <h4>عن VOID SWIFT</h4>
-            <p>أفضل متجر لبيع وتوفير أحدث سكربتات وأدوات روبلوكس بأمان عالي وضمان كامل.</p>
-        </div>
+<section id="details-page">
+    <div class="card">
+        <button onclick="show('home')" style="background:none; border:none; color:var(--pink); cursor:pointer; margin-bottom:20px;"><i class="fas fa-arrow-right"></i> العودة للمتجر</button>
+        <h1 style="color:var(--pink);">XENO EXECUTOR - الوصف الكامل</h1>
+        <p style="line-height:2; color:#ccc; margin-top:20px;">
+            مرحباً بك في أقوى نظام تشغيل سكربتات لروبلوكس. Xeno ليس مجرد برنامج عادي، بل هو محرك متكامل تم بناؤه لتخطي أقوى الحمايات الحالية. 
+            <br><br>
+            <b>المميزات التقنية:</b>
+            <br>- تخطي كامل لنظام Hyperion و Byfron.
+            <br>- دعم كامل لسكربتات الـ LuaU المعقدة.
+            <br>- خاصية Auto-Attach التي تجعل البرنامج جاهزاً فور تشغيل اللعبة.
+            <br>- واجهة مستخدم (UI) قابلة للتخصيص بالكامل لتناسب ذوقك.
+            <br>- استهلاك منخفض جداً للمعالج (CPU) مما يضمن عدم حدوث Lag أثناء اللعب.
+            <br><br>
+            <b>لماذا تختار Xeno؟</b>
+            <br>لأننا نوفر تحديثات يومية تتماشى مع تحديثات روبلوكس الأسبوعية، مما يضمن لك عدم التعرض لـ Ban. البرنامج مجرب من قبل آلاف المستخدمين ويتمتع بسمعة ممتازة في مجتمع السكربتات.
+        </p>
+        
+        <h3 style="margin-top:30px; border-bottom:1px solid #333; padding-bottom:10px;">تقييمات المستخدمين لهذه الأداة:</h3>
+        <div class="rev-box" id="revList"></div>
+        <input type="text" id="revTxt" style="width:100%; padding:12px; margin-top:15px; background:#0b0416; border:1px solid var(--purple); color:white; border-radius:10px;" placeholder="أضف تقييمك هنا...">
+        <button onclick="addReview()" class="btn-main" style="margin-top:10px;">نشر التقييم</button>
     </div>
-    <div style="text-align:center; margin-top:40px; color:#444; font-size:12px; border-top:1px solid #111; padding-top:20px;">
-        جميع الحقوق محفوظة لـ VOID SWIFT © 2026
+</section>
+
+<section id="policy-page">
+    <div class="card">
+        <h2 style="color:var(--pink);">السياسات والقوانين</h2>
+        <p style="margin-top:20px; line-height:2;">هنا تجد كافة التفاصيل حول سياسة الاستخدام والخصوصية لمتجرنا.</p>
+    </div>
+</section>
+
+<footer id="footer" style="display:none;">
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:40px;">
+        <div>
+            <h4 style="color:var(--pink);">VOID SWIFT</h4>
+            <p style="font-size:13px; color:#666; margin-top:10px;">أقوى متجر لسكربتات روبلوكس.</p>
+        </div>
+        <div>
+            <h4 style="color:var(--pink);">الأسئلة الشائعة (6)</h4>
+            <div style="margin-top:15px;">
+                <details class="faq-item"><summary>هل البرنامج آمن؟</summary><p>نعم، مشفر تماماً.</p></details>
+                <details class="faq-item"><summary>كيف أحمل السكربت؟</summary><p>بعد الإضافة للسلة يظهر لك الرابط.</p></details>
+                <details class="faq-item"><summary>هل يدعم الجوال؟</summary><p>حالياً يدعم نظام ويندوز فقط.</p></details>
+                <details class="faq-item"><summary>كم مدة الاشتراك؟</summary><p>هذه النسخة مجانية للأبد.</p></details>
+                <details class="faq-item"><summary>هل يسبب باند؟</summary><p>يحتوي على نظام Anti-Ban متطور.</p></details>
+                <details class="faq-item"><summary>كيف أتواصل معكم؟</summary><p>عبر الدسكورد أو الإيميل الموضح.</p></details>
+            </div>
+        </div>
+        <div>
+            <h4 style="color:var(--pink);">روابط سريعة</h4>
+            <a onclick="show('policy')" class="footer-link">سياسة الاستخدام</a>
+            <a onclick="show('policy')" class="footer-link">سياسة الخصوصية</a>
+            <p class="footer-link">الإيميل: swiftsa123a@gmail.com</p>
+        </div>
     </div>
 </footer>
 
@@ -129,57 +163,56 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
-    let currentNick = "";
+    let currentNick = "مستخدم";
+    let cartCount = 0;
 
     async function handleAuth() {
-        const n = document.getElementById('uNick').value.trim();
-        const e = document.getElementById('uEmail').value.trim();
-        const p = document.getElementById('uPass').value.trim();
-        if(!n || !e || !p) return alert("املا البيانات");
-
+        const e = document.getElementById('uEmail').value;
+        const p = document.getElementById('uPass').value;
         try {
-            const res = await auth.createUserWithEmailAndPassword(e, p);
-            await db.ref('users/' + res.user.uid).set({ nickname: n });
-            startApp(n);
-        } catch(err) {
-            try {
-                const res = await auth.signInWithEmailAndPassword(e, p);
-                const snap = await db.ref('users/' + res.user.uid).once('value');
-                startApp(snap.val() ? snap.val().nickname : n);
-            } catch(e2) { alert("تأكد من البيانات"); }
+            await auth.createUserWithEmailAndPassword(e, p);
+            start();
+        } catch {
+            try { await auth.signInWithEmailAndPassword(e, p); start(); } catch { alert("خطأ في الدخول"); }
         }
     }
 
-    function startApp(name) {
-        currentNick = name;
+    function start() {
         document.getElementById('auth-page').classList.remove('active');
         document.getElementById('navbar').style.display = 'flex';
         document.getElementById('footer').style.display = 'block';
-        document.getElementById('user-info').innerText = "أهلاً، " + name;
-        document.getElementById('home-page').classList.add('active');
+        show('home');
         loadReviews();
+    }
+
+    function show(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id + '-page').classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function addToCart() {
+        cartCount++;
+        document.getElementById('cartCount').innerText = cartCount;
+        alert("تمت إضافة Xeno Executor إلى السلة!");
     }
 
     function loadReviews() {
         db.ref('store_reviews').on('value', snap => {
             const list = document.getElementById('revList');
             list.innerHTML = "";
-            const data = snap.val();
-            if(data) {
-                Object.values(data).reverse().forEach(r => {
-                    list.innerHTML += `
-                        <div class="rev-card">
-                            <span style="color:var(--pink); font-weight:900;">${r.user}</span>
-                            <div style="color:#ffcc00; margin:5px 0;">⭐⭐⭐⭐⭐</div>
-                            <p style="font-size:14px; color:#bbb;">${r.text}</p>
-                        </div>`;
+            if(snap.val()) {
+                Object.values(snap.val()).reverse().forEach(r => {
+                    list.innerHTML += `<div style="background:#0b0416; padding:15px; border-radius:10px; margin-bottom:10px; border-right:3px solid var(--pink);">
+                        <b style="color:var(--pink)">${r.user}</b>: ${r.text}
+                    </div>`;
                 });
             }
         });
     }
 
     function addReview() {
-        const txt = document.getElementById('revTxt').value.trim();
+        const txt = document.getElementById('revTxt').value;
         if(!txt) return;
         db.ref('store_reviews').push({ user: currentNick, text: txt });
         document.getElementById('revTxt').value = "";
