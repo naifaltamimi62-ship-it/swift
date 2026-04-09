@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOID SWIFT | STORE</title>
+    <title>VOID SWIFT | النظام المتكامل</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -14,22 +15,37 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
         body { background:var(--bg); color:white; overflow-x:hidden; }
         
-        header { position:fixed; top:0; width:100%; padding:15px 5%; background:rgba(26,11,46,0.95); display:none; justify-content:space-between; align-items:center; z-index:1000; border-bottom:2px solid var(--pink); }
-        .logo { font-size:24px; font-weight:900; color:var(--pink); }
-        nav button { background:none; border:none; color:white; margin:0 10px; cursor:pointer; font-weight:700; }
+        /* الهيدر المتطور */
+        header { position:fixed; top:0; width:100%; padding:15px 5%; background:rgba(26, 11, 46, 0.95); display:none; justify-content:space-between; align-items:center; z-index:1000; border-bottom:2px solid var(--pink); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .logo { font-size:24px; font-weight:900; color:var(--pink); text-transform: uppercase; letter-spacing: 2px; }
+        nav button { background:none; border:none; color:white; margin:0 12px; cursor:pointer; font-weight:700; transition: 0.3s; font-size: 15px; }
+        nav button:hover { color: var(--pink); }
 
         section { display:none; padding:120px 5% 50px; min-height:100vh; flex-direction:column; align-items:center; }
         .active { display:flex; animation: fadeIn 0.5s ease; }
 
-        .card { background:var(--card); border:1px solid #333; padding:30px; border-radius:20px; width:100%; max-width:950px; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { width:100%; padding:12px; margin:10px 0; background:#0b0416; border:1px solid var(--pink); color:white; border-radius:10px; text-align:right; }
-        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:14px; border-radius:12px; font-weight:900; cursor:pointer; width:100%; transition: 0.3s; }
-        .btn-main:hover { opacity:0.8; transform:scale(1.01); }
+        /* الكروت والتصميم */
+        .card { background:var(--card); border:1px solid #333; padding:30px; border-radius:25px; width:100%; max-width:1000px; margin-bottom:20px; position: relative; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--pink); }
+        
+        input, textarea { width:100%; padding:14px; margin:10px 0; background:#0b0416; border:1px solid #444; color:white; border-radius:12px; text-align:right; font-size: 14px; }
+        input:focus { border-color: var(--pink); outline: none; }
+        
+        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:14px 30px; border-radius:12px; font-weight:900; cursor:pointer; transition: 0.3s; width: 100%; font-size: 16px; }
+        .btn-main:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 42, 139, 0.4); }
 
-        .rev-box { display:flex; gap:15px; overflow-x:auto; width:100%; padding:15px 0; scrollbar-width: none; }
-        .rev-card { min-width:280px; background:var(--purple); padding:20px; border-radius:15px; border:1px solid rgba(255,255,255,0.1); }
+        /* قسم التقييمات */
+        .rev-box { display:flex; gap:20px; overflow-x:auto; width:100%; padding:20px 0; scrollbar-width: none; }
+        .rev-card { min-width:300px; background:linear-gradient(135deg, #2a124a, #1a0b2e); padding:25px; border-radius:20px; border:1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .rev-user { color: var(--pink); font-weight: 900; margin-bottom: 8px; display: block; font-size: 16px; }
+        .stars { color: #ffcc00; margin-bottom: 10px; font-size: 14px; }
 
-        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+        /* الأسئلة الشائعة */
+        details { background: #0b0416; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; cursor: pointer; }
+        summary { font-weight: 700; color: var(--pink); outline: none; }
+        details p { margin-top: 10px; color: #bbb; font-size: 14px; line-height: 1.6; }
+
+        @keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
     </style>
 </head>
 <body>
@@ -39,13 +55,14 @@
     <nav>
         <button onclick="show('home')">الرئيسية</button>
         <button onclick="show('policy')">السياسات</button>
-        <button onclick="show('support')">الدعم</button>
+        <button onclick="show('support')">الدعم والأسئلة</button>
     </nav>
 </header>
 
 <section id="auth-page" class="active" style="justify-content:center;">
-    <div class="card" style="max-width:400px; text-align:center;">
-        <h2 style="margin-bottom:20px;">تسجيل الدخول للمتجر</h2>
+    <div class="card" style="max-width:420px; text-align:center; border: 1px solid var(--pink);">
+        <h2 style="margin-bottom:10px; font-size: 28px;">VOID SWIFT</h2>
+        <p style="color:grey; font-size:14px; margin-bottom:25px;">بوابة العبور لأفضل المنتجات الرقمية</p>
         <input type="text" id="uNick" placeholder="الاسم المستعار">
         <input type="email" id="uEmail" placeholder="البريد الإلكتروني">
         <input type="password" id="uPass" placeholder="كلمة المرور (6 خانات فأكثر)">
@@ -54,37 +71,68 @@
 </section>
 
 <section id="home-page">
-    <div class="card" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
-        <img src="https://i.imgur.com/K3pWpXG.png" style="width:100%; border-radius:20px; border: 1px solid var(--purple);">
+    <div class="card" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:40px;">
         <div>
-            <h1 style="color:var(--pink); margin-bottom:15px;">DEATH STRANDING 2: ON THE BEACH</h1>
-            <div style="font-size:32px; font-weight:900; color:white; margin-bottom:20px;">32.00 SAR</div>
-            <p style="color:grey; line-height:1.7; margin-bottom:20px;">احصل على نسختك الأصلية الآن مع ضمان كامل ضد المشاكل وتسليم فوري.</p>
-            <input type="text" id="revTxt" placeholder="أضف تقييمك للمتجر..">
-            <button onclick="addReview()" class="btn-main">نشر التقييم للجميع</button>
+            <img src="https://i.imgur.com/K3pWpXG.png" style="width:100%; border-radius:20px; border: 1px solid var(--purple); box-shadow: 0 0 30px rgba(123, 44, 191, 0.3);">
+        </div>
+        <div>
+            <div style="background:rgba(0,255,100,0.1); color:#00ff64; padding:6px 15px; border-radius:20px; display:inline-block; font-size:12px; margin-bottom:15px; font-weight: 700;">● تسليم آلي فوري</div>
+            <h1 style="font-size:32px; margin-bottom:10px; font-weight: 900;">DEATH STRANDING 2</h1>
+            <div style="font-size:36px; font-weight:900; color:var(--pink); margin-bottom:20px;">32.00 SAR</div>
+            <p style="color:#aaa; line-height:1.8; margin-bottom:25px;">احصل على نسختك الأصلية من متجر VOID. نضمن لك الجودة والسرعة في التنفيذ مع دعم فني متواجد دائماً لخدمتك.</p>
+            
+            <div style="background:#0b0416; padding:20px; border-radius:18px; border:1px solid #222;">
+                <h4 style="margin-bottom:12px;">رأيك يهمنا:</h4>
+                <input type="text" id="revTxt" placeholder="اكتب تقييمك هنا..">
+                <button onclick="addReview()" class="btn-main">نشر التقييم</button>
+            </div>
         </div>
     </div>
-    <h3 style="width:100%; max-width:950px; margin-top:30px; text-align:right;">آراء العملاء ⭐</h3>
-    <div class="rev-box" id="revList" style="max-width:950px;"></div>
+
+    <h3 style="width:100%; max-width:1000px; margin-top:40px; text-align:right; font-size: 22px;">تقييمات العملاء ⭐</h3>
+    <div class="rev-box" id="revList" style="max-width:1000px;"></div>
 </section>
 
 <section id="policy-page">
     <div class="card">
-        <h2 style="color:var(--pink); margin-bottom:20px;">سياسة الاستخدام</h2>
-        <p style="line-height:2;">- التسليم يتم آلياً وفورياً بعد الدفع.<br>- المنتجات الرقمية لا تسترد بعد الكشف عن الكود.<br>- نضمن الحسابات ضد أي مشاكل تقنية.</p>
+        <h2 style="color:var(--pink); margin-bottom:25px; font-size: 26px;">سياسة الاستخدام والخصوصية</h2>
+        <div style="line-height:2.2; font-size:16px; color: #ddd;">
+            <p>● <b>المنتجات الرقمية:</b> بمجرد استلام الكود أو الحساب لا يمكن استرجاع المبلغ.</p>
+            <p>● <b>الضمان:</b> جميع حساباتنا مضمونة ضد السحب أو الإغلاق التقني لمدة عام كامل.</p>
+            <p>● <b>الدعم الفني:</b> نلتزم بالرد على استفساراتكم خلال أقل من 12 ساعة.</p>
+            <p>● <b>الخصوصية:</b> بياناتك في VOID مشفرة تماماً ولا يتم مشاركتها أبداً.</p>
+        </div>
     </div>
 </section>
 
 <section id="support-page">
     <div class="card">
-        <h2 style="color:var(--pink); margin-bottom:20px;">الدعم الفني</h2>
-        <p>واجهت مشكلة؟ نحن هنا للمساعدة عبر الواتساب:</p>
-        <button class="btn-main" style="margin-top:20px;" onclick="window.open('https://wa.me/966XXXXXXXXX')">تواصل الآن</button>
+        <h2 style="color:var(--pink); margin-bottom:25px; font-size: 26px;">الأسئلة الشائعة & الدعم</h2>
+        
+        <details>
+            <summary>متى يوصلني الطلب؟</summary>
+            <p>الطلب يوصلك فوراً بعد الدفع مباشرة عبر البريد الإلكتروني أو في صفحة الطلبات.</p>
+        </details>
+        
+        <details>
+            <summary>هل اللعبة أصلية؟</summary>
+            <p>نعم، جميع ألعابنا وحساباتنا رسمية 100% ومستخرجة من المتاجر المعتمدة.</p>
+        </details>
+
+        <details>
+            <summary>كيف أتواصل مع الدعم الفني؟</summary>
+            <p>يمكنك التواصل معنا عبر الواتساب الموضح بالأسفل أو عبر رسائل المتجر المباشرة.</p>
+        </details>
+
+        <div style="text-align:center; padding:30px; background:#0b0416; border-radius:20px; margin-top: 30px; border: 1px solid #333;">
+            <p style="margin-bottom:15px; font-weight: 700;">هل لديك سؤال آخر؟</p>
+            <button class="btn-main" style="width: auto; padding: 14px 50px;" onclick="window.open('https://wa.me/966XXXXXXXXX')">تواصل عبر واتساب</button>
+        </div>
     </div>
 </section>
 
 <script>
-    // استخدام بيانات الـ SDK الصحيحة التي زودتنا بها
+    // إعداداتك الصحيحة
     const firebaseConfig = {
         apiKey: "AIzaSyCWVnf3CKX2d8wI0NPATsqkLhmBabCgaB4",
         authDomain: "swiftvoid-3e5a6.firebaseapp.com",
@@ -105,7 +153,7 @@
         const n = document.getElementById('uNick').value.trim();
         const e = document.getElementById('uEmail').value.trim();
         const p = document.getElementById('uPass').value.trim();
-        if(!n || !e || !p) return alert("املأ كل الخانات فضلاً");
+        if(!n || !e || !p) return alert("فضلاً املأ جميع الخانات");
 
         try {
             const res = await auth.createUserWithEmailAndPassword(e, p);
@@ -116,7 +164,7 @@
                 const res = await auth.signInWithEmailAndPassword(e, p);
                 const snap = await db.ref('users/' + res.user.uid).once('value');
                 startApp(snap.val() ? snap.val().nickname : n);
-            } catch(e2) { alert("خطأ: تأكد من الإيميل والباسورد"); }
+            } catch(e2) { alert("خطأ: تأكد من صحة البيانات"); }
         }
     }
 
@@ -128,28 +176,41 @@
         loadReviews();
     }
 
-    function show(id) {
+    function show(pageId) {
         document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id + '-page').classList.add('active');
+        document.getElementById(pageId + '-page').classList.add('active');
+        window.scrollTo(0,0);
     }
 
     function loadReviews() {
-        db.ref('reviews').on('value', snap => {
+        db.ref('store_reviews').on('value', snap => {
             const list = document.getElementById('revList');
             list.innerHTML = "";
-            if(snap.val()) {
-                Object.values(snap.val()).reverse().forEach(r => {
-                    list.innerHTML += `<div class="rev-card"><h4>${r.user}</h4><p>⭐⭐⭐⭐⭐</p><p>${r.text}</p></div>`;
+            const data = snap.val();
+            if(data) {
+                Object.values(data).reverse().forEach(r => {
+                    list.innerHTML += `
+                        <div class="rev-card">
+                            <span class="rev-user">${r.user}</span>
+                            <div class="stars">⭐⭐⭐⭐⭐</div>
+                            <p style="font-size:14px; color: #ccc;">${r.text}</p>
+                        </div>`;
                 });
+            } else {
+                list.innerHTML = "<p style='color:grey;'>لا توجد تقييمات حالياً.. كن أول من يقيم!</p>";
             }
         });
     }
 
     function addReview() {
-        const t = document.getElementById('revTxt').value;
-        if(!t) return;
-        db.ref('reviews').push({user: currentNick, text: t});
+        const txt = document.getElementById('revTxt').value.trim();
+        if(!txt) return alert("اكتب رأيك أولاً");
+        db.ref('store_reviews').push({
+            user: currentNick,
+            text: txt
+        });
         document.getElementById('revTxt').value = "";
+        alert("تم نشر تقييمك بنجاح! ✅");
     }
 </script>
 </body>
