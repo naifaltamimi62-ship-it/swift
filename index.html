@@ -14,126 +14,119 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
         :root { --pink: #d42a8b; --purple: #7b2cbf; --bg: #0f051d; --card: #1a0b2e; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
-        body { background:var(--bg); color:white; overflow-x:hidden; }
+        body { background:var(--bg); color:white; overflow-x:hidden; transition: 0.5s; }
         
-        /* اللوقن القديم */
-        #auth-page { background: url('https://i.imgur.com/8QZ9X9b.png') no-repeat center center fixed; background-size: cover; }
-        .login-card { background:rgba(26,11,46,0.8); border:1px solid var(--pink); padding:40px; border-radius:15px; width:400px; text-align:center; backdrop-filter: blur(10px); }
+        /* خلفية الهاك الرقمية لصفحة الدخول */
+        .matrix-bg { background: linear-gradient(rgba(15, 5, 29, 0.9), rgba(15, 5, 29, 0.9)), url('https://i.makeagif.com/media/12-28-2015/v-3InG.gif'); background-size: cover; }
 
         header { position:fixed; top:0; width:100%; padding:15px 5%; background:rgba(26,11,46,0.95); display:none; justify-content:space-between; align-items:center; z-index:1000; border-bottom:2px solid var(--pink); }
 
-        /* السلة الجانبية */
-        .cart-sidebar { position: fixed; top: 0; left: -350px; width: 350px; height: 100%; background: var(--card); z-index: 3000; transition: 0.4s; padding: 20px; border-right: 2px solid var(--pink); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+        /* سلة المشتريات الجانبية */
+        .cart-sidebar { position: fixed; top: 0; left: -350px; width: 350px; height: 100%; background: var(--card); z-index: 3000; transition: 0.4s; padding: 20px; border-right: 2px solid var(--pink); }
         .cart-sidebar.open { left: 0; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; background: #0b0416; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #333; }
 
         section { display:none; padding:120px 5% 50px; min-height:100vh; flex-direction:column; align-items:center; }
         .active { display:flex; animation: fadeIn 0.5s ease; }
 
-        /* كرت المنتج الصغير */
-        .mini-card { background:var(--card); border:1px solid #333; padding:15px; border-radius:15px; width:280px; transition: 0.3s; cursor: pointer; }
-        .mini-card:hover { border-color: var(--pink); transform: translateY(-5px); }
-        .mini-card img { width:100%; border-radius:10px; margin-bottom:10px; }
+        /* تصميم كرت المنتج الصغير */
+        .mini-card { background:var(--card); border:1px solid #333; padding:15px; border-radius:15px; width:260px; transition: 0.3s; cursor: pointer; text-align: center; }
+        .mini-card:hover { border-color: var(--pink); transform: scale(1.02); }
+        .mini-card img { width:100%; border-radius:10px; margin-bottom:10px; pointer-events: none; }
 
-        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer; width:100%; margin-top:5px; }
+        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer; width:100%; }
         
-        .discord-float { position: fixed; bottom: 30px; right: 30px; background: #5865F2; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 2000; cursor: pointer; }
+        /* نظام النجوم للتقييم */
+        .star-rating { color: #ffcc00; font-size: 20px; cursor: pointer; margin: 10px 0; }
+        .rev-card { background: rgba(123, 44, 191, 0.1); padding: 20px; border-radius: 15px; border-right: 4px solid var(--pink); margin-bottom: 15px; width: 100%; max-width: 600px; }
 
-        /* الأسئلة والسياسة */
-        .faq-item summary { cursor: pointer; padding: 15px; background: #0b0416; border-radius: 10px; list-style: none; transition: 0.3s; border: 1px solid #222; }
-        .faq-item[open] summary { background: var(--purple); box-shadow: 0 0 15px var(--purple); border-color: white; }
-        .back-btn { align-self: flex-start; color: var(--pink); cursor: pointer; margin-bottom: 20px; font-size: 18px; }
+        /* تنبيهات الموقع (بديل جوجل) */
+        .site-alert { position: fixed; top: 20px; right: 20px; background: var(--pink); padding: 15px 25px; border-radius: 10px; z-index: 5000; display: none; animation: slideIn 0.3s ease; }
 
         @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+        @keyframes slideIn { from {right:-100%;} to {right:20px;} }
     </style>
 </head>
-<body>
+<body class="matrix-bg" id="bodyTag">
+
+<div class="site-alert" id="siteAlert"></div>
 
 <div class="cart-sidebar" id="cartSidebar">
-    <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
-        <h3>سلة المشتريات</h3>
-        <i class="fas fa-times" onclick="toggleCart()" style="cursor:pointer; color:var(--pink);"></i>
-    </div>
-    <div id="cartItems">
-        <p style="color:grey; text-align:center;">السلة فارغة حالياً</p>
-    </div>
+    <h3>سلة المشتريات</h3>
+    <hr style="margin:20px 0; border:1px solid #333;">
+    <div id="cartItems"><p style="color:grey; text-align:center;">السلة فارغة</p></div>
     <div style="position:absolute; bottom:20px; width:calc(100% - 40px);">
-        <button class="btn-main" onclick="alert('سيتم توجيهك للدفع...')">إتمام الشراء</button>
+        <button class="btn-main" onclick="show('checkout')">إتمام الشراء والدفع</button>
     </div>
 </div>
 
 <header id="navbar">
-    <div style="font-weight:900; color:var(--pink);">VOID SWIFT</div>
-    <div style="display:flex; gap:20px;">
-        <i class="fas fa-shopping-basket" onclick="toggleCart()" style="cursor:pointer; font-size:20px;"></i>
-        <div id="user-info"></div>
+    <div style="font-weight:900; color:var(--pink); font-size:24px;">VOID SWIFT</div>
+    <div style="display:flex; gap:25px; align-items:center;">
+        <i class="fas fa-shopping-bag" onclick="toggleCart()" style="cursor:pointer; font-size:22px;"></i>
+        <div id="user-info" style="font-weight:700;"></div>
     </div>
 </header>
 
-<a href="https://discord.gg/YOUR_LINK" class="discord-float"><i class="fab fa-discord"></i></a>
-
 <section id="auth-page" class="active" style="justify-content:center;">
-    <div class="login-card">
-        <h2 style="margin-bottom:25px;">إنشاء حساب / دخول</h2>
-        <input type="text" id="uNick" style="width:100%; padding:12px; margin-bottom:15px; background:#000; border:1px solid #333; color:white;" placeholder="الاسم">
-        <input type="email" id="uEmail" style="width:100%; padding:12px; margin-bottom:15px; background:#000; border:1px solid #333; color:white;" placeholder="الإيميل">
-        <input type="password" id="uPass" style="width:100%; padding:12px; margin-bottom:15px; background:#000; border:1px solid #333; color:white;" placeholder="كلمة المرور">
-        <button onclick="handleAuth()" class="btn-main">دخول آمن للمتجر</button>
+    <div style="background:rgba(10,4,20,0.9); border:2px solid var(--pink); padding:40px; border-radius:20px; width:400px; text-align:center;">
+        <h1 style="color:var(--pink); margin-bottom:30px; letter-spacing:5px;">AUTH_REQUIRED</h1>
+        <input type="email" id="uEmail" style="width:100%; padding:15px; margin-bottom:15px; background:#000; border:1px solid var(--purple); color:var(--pink);" placeholder="USER_EMAIL">
+        <input type="password" id="uPass" style="width:100%; padding:15px; margin-bottom:20px; background:#000; border:1px solid var(--purple); color:var(--pink);" placeholder="PASSWORD">
+        <button onclick="handleAuth()" class="btn-main">EXECUTE_LOGIN</button>
     </div>
 </section>
 
 <section id="home-page">
-    <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center; width:100%;">
+    <div style="display:flex; flex-wrap:wrap; gap:30px; justify-content:center;">
         <div class="mini-card" onclick="show('details')">
             <img src="https://i.imgur.com/K3pWpXG.png">
-            <h4 style="text-align:center;">XENO EXECUTOR</h4>
-            <p style="text-align:center; color:var(--pink); font-weight:900; margin:5px 0;">0.0 SAR <span style="text-decoration:line-through; color:grey; font-size:12px;">22 SAR</span></p>
-            <button class="btn-main" onclick="event.stopPropagation(); addToCart('Xeno Executor', '0.0')">إضافة للسلة</button>
+            <h4>XENO EXECUTOR</h4>
+            <p style="color:var(--pink); font-weight:900; margin:10px 0;">0.00 SAR <span style="text-decoration:line-through; color:grey; font-size:12px;">22.00 SAR</span></p>
+            <button class="btn-main" onclick="event.stopPropagation(); addToCart('XENO EXECUTOR', '0.00')">إضافة للسلة</button>
         </div>
     </div>
 </section>
 
 <section id="details-page">
-    <div class="back-btn" onclick="show('home')"><i class="fas fa-arrow-right"></i> رجوع للمتجر</div>
-    <div style="background:var(--card); padding:30px; border-radius:20px; max-width:900px; width:100%;">
-        <h1 style="color:var(--pink);">XENO EXECUTOR</h1>
-        <p style="line-height:2; margin:20px 0; color:#ccc;">
-            الوصف الطويل: أداة Xeno هي الأقوى لتنفيذ سكربتات روبلوكس... (أدخل الوصف الكامل هنا ليكون طويلاً كما طلبت).
-            تتميز بتخطي الحماية، سرعة التنفيذ، واجهة عصرية، ودعم فني متواصل.
-        </p>
-        <button class="btn-main" style="width:200px;" onclick="addToCart('Xeno Executor', '0.0')">اشتر الآن</button>
-        
-        <h3 style="margin-top:40px; border-bottom:1px solid #333; padding-bottom:10px;">تقييمات المستخدمين</h3>
-        <div id="revList" style="margin-top:20px;"></div>
+    <div style="background:var(--card); padding:40px; border-radius:25px; max-width:1000px; width:100%;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:40px;">
+            <img src="https://i.imgur.com/K3pWpXG.png" style="width:100%; border-radius:20px;">
+            <div>
+                <h1 style="color:var(--pink);">XENO EXECUTOR V2</h1>
+                <p style="line-height:1.8; margin:20px 0; color:#aaa;">
+                    أداة التنفيذ الأسرع والأكثر أماناً في عالم الألعاب. تخطي كامل للحماية مع واجهة برمجية متطورة تدعم كافة السكربتات الحديثة.
+                </p>
+                <div class="star-rating" id="starInput">
+                    <i class="fas fa-star" onclick="setStars(1)"></i>
+                    <i class="fas fa-star" onclick="setStars(2)"></i>
+                    <i class="fas fa-star" onclick="setStars(3)"></i>
+                    <i class="fas fa-star" onclick="setStars(4)"></i>
+                    <i class="fas fa-star" onclick="setStars(5)"></i>
+                </div>
+                <input type="text" id="revTxt" style="width:100%; padding:12px; background:#0b0416; border:1px solid #333; color:white; border-radius:10px;" placeholder="اكتب مراجعتك هنا...">
+                <button class="btn-main" style="margin-top:15px;" onclick="addReview()">نشر التقييم</button>
+            </div>
+        </div>
+        <h3 style="margin-top:50px; border-bottom:1px solid #333; padding-bottom:15px;">آراء الأصدقاء <i class="fas fa-heart" style="color:var(--pink);"></i></h3>
+        <div id="revList" style="margin-top:30px; display: flex; flex-direction: column; align-items: center;"></div>
     </div>
 </section>
 
-<section id="policy-page">
-    <div class="back-btn" onclick="show('home')"><i class="fas fa-arrow-right"></i> رجوع</div>
-    <div style="background:var(--card); padding:30px; border-radius:20px; width:100%; max-width:800px;">
-        <h2 style="color:var(--pink);">سياسة الاستبدال والاسترجاع</h2>
-        <p style="line-height:2; margin-top:15px;">- المنتجات الرقمية لا تسترد بعد الكشف عن الكود.<br>- يتم الاستبدال فقط في حال وجود خلل فني مثبت بالحساب.</p>
+<section id="checkout-page">
+    <div class="card" style="max-width:500px; text-align:center;">
+        <h2 style="color:var(--pink); margin-bottom:25px;">بوابة الدفع الآمنة</h2>
+        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px; font-size:30px; color:#aaa;">
+            <i class="fab fa-apple-pay"></i> <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i>
+        </div>
+        <input type="text" placeholder="رقم البطاقة" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;">
+        <div style="display:flex; gap:10px;">
+            <input type="text" placeholder="MM/YY" style="width:50%; padding:12px; background:#000; border:1px solid #333; color:white;">
+            <input type="text" placeholder="CVV" style="width:50%; padding:12px; background:#000; border:1px solid #333; color:white;">
+        </div>
+        <button class="btn-main" style="margin-top:20px;" onclick="customAlert('شكراً لك! تم معالجة الطلب بنجاح')">دفع الآن</button>
+        <p onclick="show('home')" style="margin-top:15px; cursor:pointer; font-size:12px;">إلغاء والعودة للمتجر</p>
     </div>
 </section>
-
-<footer id="footer" style="display:none; background:#0a0414; padding:40px 5%; border-top:1px solid #222; width:100%;">
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:30px;">
-        <div>
-            <h4 style="color:var(--pink);">الأسئلة الشائعة</h4>
-            <details class="faq-item" style="margin-top:10px;"><summary>سؤال 1: هل هو آمن؟</summary><p style="padding:10px;">نعم 100%.</p></details>
-            <details class="faq-item" style="margin-top:5px;"><summary>سؤال 2: كيف أحمل؟</summary><p style="padding:10px;">عبر رابط التحميل.</p></details>
-            <details class="faq-item" style="margin-top:5px;"><summary>سؤال 3: هل يدعم الجوال؟</summary><p style="padding:10px;">نعم قريباً.</p></details>
-            <details class="faq-item" style="margin-top:5px;"><summary>سؤال 4: متى يوصل الطلب؟</summary><p style="padding:10px;">فوري.</p></details>
-            <details class="faq-item" style="margin-top:5px;"><summary>سؤال 5: هل يسبب باند؟</summary><p style="padding:10px;">لا يوجد سجل باند.</p></details>
-            <details class="faq-item" style="margin-top:5px;"><summary>سؤال 6: كيف أتواصل؟</summary><p style="padding:10px;">عبر الإيميل أو الدسكورد.</p></details>
-        </div>
-        <div>
-            <h4 style="color:var(--pink);">روابط</h4>
-            <p onclick="show('policy')" style="cursor:pointer; transition:0.3s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color='white'">سياسة الاستخدام</p>
-            <p onclick="show('policy')" style="cursor:pointer; margin-top:10px; transition:0.3s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color='white'">سياسة الاسترجاع</p>
-        </div>
-    </div>
-</footer>
 
 <script>
     const firebaseConfig = {
@@ -149,18 +142,32 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
+    let selectedStars = 5;
+
+    function customAlert(msg) {
+        const a = document.getElementById('siteAlert');
+        a.innerText = msg; a.style.display = 'block';
+        setTimeout(() => a.style.display = 'none', 3000);
+    }
 
     async function handleAuth() {
         const e = document.getElementById('uEmail').value;
         const p = document.getElementById('uPass').value;
-        try { await auth.createUserWithEmailAndPassword(e, p); start(); }
-        catch { try { await auth.signInWithEmailAndPassword(e, p); start(); } catch { alert("خطأ في البيانات"); } }
+        try {
+            await auth.signInWithEmailAndPassword(e, p);
+            start();
+        } catch {
+            try {
+                await auth.createUserWithEmailAndPassword(e, p);
+                start();
+            } catch { customAlert("خطأ: تأكد من بيانات الحساب"); }
+        }
     }
 
     function start() {
+        document.getElementById('bodyTag').classList.remove('matrix-bg');
         document.getElementById('auth-page').classList.remove('active');
         document.getElementById('navbar').style.display = 'flex';
-        document.getElementById('footer').style.display = 'block';
         show('home');
         loadReviews();
     }
@@ -173,11 +180,17 @@
 
     function toggleCart() { document.getElementById('cartSidebar').classList.toggle('open'); }
 
-    function addToCart(name, price) {
+    function addToCart(n, p) {
         const items = document.getElementById('cartItems');
         if(items.innerHTML.includes('فارغة')) items.innerHTML = "";
-        items.innerHTML += `<div class="cart-item"><span>${name}</span><span>${price} SAR</span></div>`;
-        alert("تمت الإضافة!");
+        items.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #222;"><span>${n}</span><span>${p} SAR</span></div>`;
+        customAlert("تمت إضافة المنتج للسلة!");
+    }
+
+    function setStars(n) {
+        selectedStars = n;
+        const stars = document.getElementById('starInput').children;
+        for(let i=0; i<5; i++) stars[i].style.color = (i < n) ? '#ffcc00' : '#444';
     }
 
     function loadReviews() {
@@ -185,11 +198,20 @@
             const list = document.getElementById('revList');
             list.innerHTML = "";
             if(snap.val()) {
-                Object.values(snap.val()).forEach(r => {
-                    list.innerHTML += `<div style="background:#0b0416; padding:15px; border-radius:10px; margin-bottom:10px; border:1px solid #333;"><b style="color:var(--pink)">${r.user}</b>: ${r.text}</div>`;
+                Object.values(snap.val()).reverse().forEach(r => {
+                    let s = ""; for(let i=0; i<r.stars; i++) s += "⭐";
+                    list.innerHTML += `<div class="rev-card"><b>مستخدم VOID</b> <span style="font-size:12px; color:grey;">${s}</span><p style="margin-top:10px; color:#ccc;">${r.text}</p></div>`;
                 });
             }
         });
+    }
+
+    function addReview() {
+        const t = document.getElementById('revTxt').value;
+        if(!t) return;
+        db.ref('store_reviews').push({ text: t, stars: selectedStars });
+        document.getElementById('revTxt').value = "";
+        customAlert("شكراً لتقييمك!");
     }
 </script>
 </body>
