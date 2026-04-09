@@ -40,6 +40,9 @@
         .rev-card { background: rgba(123, 44, 191, 0.1); padding: 20px; border-radius: 15px; border-right: 4px solid var(--pink); margin-bottom: 15px; width: 100%; max-width: 600px; }
         .star-rating { color: #ffcc00; font-size: 20px; cursor: pointer; margin: 10px 0; }
 
+        /* ستايل التحميل */
+        .download-box { display:none; flex-direction:column; align-items:center; background:var(--card); padding:30px; border-radius:20px; border:1px solid var(--pink); }
+
         @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
     </style>
 </head>
@@ -123,13 +126,26 @@
 </section>
 
 <section id="checkout-page">
-    <div style="background:var(--card); padding:40px; border-radius:25px; max-width:500px; width:100%; text-align:center;">
+    <div id="paymentFields" style="background:var(--card); padding:40px; border-radius:25px; max-width:500px; width:100%; text-align:center;">
         <h2 style="color:var(--pink); margin-bottom:20px;">إتمام الدفع</h2>
         <div style="font-size:30px; margin-bottom:20px; color:#aaa;">
             <i class="fab fa-apple-pay"></i> <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i>
         </div>
         <input type="text" placeholder="رقم البطاقة" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;">
-        <button class="btn-main" onclick="customAlert('شكراً لشرائك!'); show('home')">تأكيد الدفع</button>
+        <button class="btn-main" onclick="startDownloadProcess()">تأكيد الدفع</button>
+    </div>
+
+    <div id="downloadBox" class="download-box" style="display:none; text-align:center; max-width:500px;">
+        <h2 style="color:var(--pink);">📜 شروط استخدام XENO</h2>
+        <div style="margin:20px 0; text-align:right; font-size:14px; color:#ccc;">
+            <p>• يمنع استخدام الأداة في الأغراض التخريبية.</p>
+            <p>• المتجر غير مسؤول عن الحظر (باند) الناتج عن سوء الاستخدام.</p>
+            <p>• لا يتم استرجاع المبلغ بعد التحميل.</p>
+        </div>
+        <hr style="width:100%; border:0.5px solid #333; margin-bottom:20px;">
+        <p style="color:var(--pink); font-weight:bold;">سيتم تحويلك للتحميل خلال:</p>
+        <h1 id="timer" style="font-size:50px; margin:10px 0;">5</h1>
+        <p style="font-size:12px; color:grey;">يرجى الانتظار...</p>
     </div>
 </section>
 
@@ -200,24 +216,33 @@
         show('home'); loadReviews();
     }
 
+    function startDownloadProcess() {
+        // إخفاء حقول الدفع وإظهار شاشة الشروط والعد
+        document.getElementById('paymentFields').style.display = 'none';
+        document.getElementById('downloadBox').style.display = 'flex';
+        
+        let timeLeft = 5;
+        const timerElement = document.getElementById('timer');
+        
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerElement.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                window.location.href = "https://www.mediafire.com/your-download-link"; // استبدل الرابط برابط ميديا فاير الخاص بك
+            }
+        }, 1000);
+    }
+
     function show(id) { document.querySelectorAll('section').forEach(s => s.classList.remove('active')); document.getElementById(id + '-page').classList.add('active'); window.scrollTo(0,0); if(id==='home') toggleCart(true); }
-    
     function toggleCart(forceClose) { 
         const cart = document.getElementById('cartSidebar');
         if(forceClose) cart.classList.remove('open');
         else cart.classList.toggle('open'); 
     }
-
     function addToCart(n, p) { cartCount++; document.getElementById('cartBadge').innerText = cartCount; customAlert("تمت الإضافة!"); }
-    
     function setStars(n) { selectedStars = n; const stars = document.getElementById('starInput').children; for(let i=0; i<5; i++) stars[i].style.color = (i < n) ? '#ffcc00' : '#444'; }
-    
-    function addReview() {
-        const t = document.getElementById('revTxt').value; if(!t) return;
-        db.ref('store_reviews').push({ text: t, stars: selectedStars });
-        document.getElementById('revTxt').value = ""; customAlert("تم النشر!");
-    }
-
+    function addReview() { const t = document.getElementById('revTxt').value; if(!t) return; db.ref('store_reviews').push({ text: t, stars: selectedStars }); document.getElementById('revTxt').value = ""; customAlert("تم النشر!"); }
     function loadReviews() {
         db.ref('store_reviews').on('value', snap => {
             const list = document.getElementById('revList'); list.innerHTML = "";
