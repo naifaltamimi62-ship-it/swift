@@ -16,15 +16,12 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
         body { background:var(--bg); color:white; overflow-x:hidden; transition: 0.5s; }
         
-        /* شريط الإشعار العلوي */
         .announcement-bar { background: linear-gradient(90deg, var(--purple), var(--pink)); color: white; text-align: center; padding: 10px; font-weight: bold; position: fixed; top: 0; width: 100%; z-index: 2000; font-size: 14px; }
-
-        /* الخلفيات */
         .matrix-bg { background: linear-gradient(rgba(15, 5, 29, 0.9), rgba(15, 5, 29, 0.9)), url('https://i.makeagif.com/media/12-28-2015/v-3InG.gif'); background-size: cover; }
 
         header { position:fixed; top:40px; width:100%; padding:15px 5%; background:rgba(26,11,46,0.95); display:none; justify-content:space-between; align-items:center; z-index:1000; border-bottom:2px solid var(--pink); }
+        .logo { font-weight:900; color:var(--pink); font-size:22px; cursor: pointer; text-decoration: none; }
 
-        /* السلة الجانبية */
         .cart-sidebar { position: fixed; top: 0; left: -350px; width: 350px; height: 100%; background: var(--card); z-index: 3000; transition: 0.4s; padding: 20px; border-right: 2px solid var(--pink); }
         .cart-sidebar.open { left: 0; }
         .close-cart { font-size: 24px; cursor: pointer; color: var(--pink); margin-bottom: 20px; }
@@ -32,16 +29,16 @@
         section { display:none; padding:150px 5% 50px; min-height:100vh; flex-direction:column; align-items:center; width: 100%; }
         .active { display:flex; animation: fadeIn 0.5s ease; }
 
-        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer; width:100%; }
+        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer; width:100%; transition: 0.3s; }
+        .btn-main:hover { transform: scale(1.03); opacity: 0.9; }
 
-        .site-alert { position: fixed; top: 60px; right: 20px; background: var(--pink); padding: 15px; border-radius: 10px; z-index: 5000; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .site-alert { position: fixed; top: 60px; right: 20px; background: var(--pink); padding: 15px; border-radius: 10px; z-index: 5000; display: none; }
 
         footer { background: #0a0414; padding: 60px 5%; border-top: 1px solid #222; width: 100%; display: none; }
         .footer-link { color: #aaa; text-decoration: none; cursor: pointer; display: block; margin: 10px 0; }
-        .footer-link:hover { color: var(--purple); }
 
-        /* ستايل كرت التقييم */
         .rev-card { background: rgba(123, 44, 191, 0.1); padding: 20px; border-radius: 15px; border-right: 4px solid var(--pink); margin-bottom: 15px; width: 100%; max-width: 600px; }
+        .star-rating { color: #ffcc00; font-size: 20px; cursor: pointer; margin: 10px 0; }
 
         @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
     </style>
@@ -62,33 +59,32 @@
 </div>
 
 <header id="navbar">
-    <div style="font-weight:900; color:var(--pink); font-size:22px;">VOID SWIFT</div>
+    <div class="logo" onclick="show('home')">VOID SWIFT</div>
     <div style="display:flex; gap:20px; align-items:center;">
         <div style="position:relative; cursor:pointer;" onclick="toggleCart()">
             <i class="fas fa-shopping-basket" style="font-size:20px;"></i>
             <span id="cartBadge" style="background:var(--pink); color:white; border-radius:50%; padding:2px 7px; font-size:12px; position:absolute; top:-10px; right:-10px;">0</span>
         </div>
-        <div id="user-info"></div>
     </div>
 </header>
 
 <section id="auth-page" class="active" style="justify-content:center;">
     <div id="authStep1" style="background:rgba(10,4,20,0.95); border:2px solid var(--pink); padding:40px; border-radius:20px; width:400px; text-align:center;">
         <h2 id="authTitle" style="color:var(--pink); margin-bottom:20px;">تسجيل الدخول</h2>
-        <input type="email" id="uEmail" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;" placeholder="البريد الإلكتروني">
-        <input type="password" id="uPass" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;" placeholder="كلمة المرور">
+        <input type="email" id="uEmail" placeholder="البريد الإلكتروني" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;">
+        <input type="password" id="uPass" placeholder="كلمة المرور" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;">
         <div id="signupOnly" style="display:none;">
-            <input type="text" id="uPhone" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;" placeholder="رقم الجوال">
+            <input type="text" id="uPhone" placeholder="رقم الجوال" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;">
         </div>
-        <button onclick="startAuthProcess()" class="btn-main" id="mainBtn">دخول</button>
+        <button onclick="sendOTP()" class="btn-main" id="mainBtn">دخول</button>
         <p onclick="toggleAuth()" id="toggleText" style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--purple);">إنشاء حساب جديد؟</p>
     </div>
 
     <div id="authStep2" style="background:rgba(10,4,20,0.95); border:2px solid var(--pink); padding:40px; border-radius:20px; width:400px; text-align:center; display:none;">
-        <h2 style="color:var(--pink);">تأكيد الهوية</h2>
-        <p style="font-size:12px; margin:15px 0;">أدخل الرمز المتغير المرسل إليك</p>
-        <input type="text" id="otpCode" style="text-align:center; letter-spacing:10px; font-size:24px; border:1px solid var(--pink);" maxlength="4" placeholder="0000">
-        <button onclick="verifyOTP()" class="btn-main">تحقق الآن</button>
+        <h2 style="color:var(--pink);">تأكيد الرمز</h2>
+        <p id="otpHint" style="font-size:12px; margin:15px 0; color:#00ffcc;"></p>
+        <input type="text" id="otpCode" maxlength="4" placeholder="0000" style="text-align:center; letter-spacing:10px; font-size:24px; border:1px solid var(--pink); background:#000; color:white; width:100%; padding:12px;">
+        <button onclick="verifyOTP()" class="btn-main" style="margin-top:20px;">تحقق ودخول</button>
     </div>
 </section>
 
@@ -104,148 +100,131 @@
 </section>
 
 <section id="details-page">
-    <div style="background:var(--card); padding:30px; border-radius:20px; max-width:800px; width:100%;">
-        <h2 style="color:var(--pink);">XENO EXECUTOR V2</h2>
-        <p style="line-height:2; margin:20px 0; color:#aaa;">أداة Xeno تعتبر الأسرع في تنفيذ سكربتات روبلوكس مع حماية متطورة وتخطي شامل للأنظمة الحديثة.</p>
-        <div style="margin:20px 0;">
-            <button class="btn-main" style="width:200px;" onclick="addToCart('XENO', '0.00')">اشتر الآن</button>
-            <button class="btn-main" style="width:120px; background:#333; margin-right:10px;" onclick="show('home')">رجوع</button>
+    <div style="background:var(--card); padding:30px; border-radius:20px; max-width:900px; width:100%;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
+            <img src="https://i.imgur.com/K3pWpXG.png" style="width:100%; border-radius:15px;">
+            <div>
+                <h2 style="color:var(--pink);">XENO EXECUTOR V2</h2>
+                <div class="star-rating" id="starInput">
+                    <i class="fas fa-star" onclick="setStars(1)"></i>
+                    <i class="fas fa-star" onclick="setStars(2)"></i>
+                    <i class="fas fa-star" onclick="setStars(3)"></i>
+                    <i class="fas fa-star" onclick="setStars(4)"></i>
+                    <i class="fas fa-star" onclick="setStars(5)"></i>
+                </div>
+                <input type="text" id="revTxt" placeholder="أضف تقييمك..." style="width:100%; padding:10px; background:#000; border:1px solid #333; color:white; border-radius:8px;">
+                <button class="btn-main" style="margin-top:10px;" onclick="addReview()">نشر التقييم</button>
+                <button class="btn-main" style="margin-top:20px; background:var(--purple);" onclick="addToCart('XENO', '0.00')">إضافة للسلة</button>
+            </div>
         </div>
-        <h3 style="margin-top:40px; border-bottom:1px solid #333; padding-bottom:10px;">التقييمات</h3>
+        <h3 style="margin-top:40px; border-bottom:1px solid #333; padding-bottom:10px;">تقييمات العملاء</h3>
         <div id="revList" style="margin-top:20px;"></div>
     </div>
 </section>
 
 <section id="checkout-page">
     <div style="background:var(--card); padding:40px; border-radius:25px; max-width:500px; width:100%; text-align:center;">
-        <h2 style="color:var(--pink); margin-bottom:20px;">بوابة الدفع</h2>
-        <div style="display:flex; justify-content:center; gap:15px; font-size:30px; margin-bottom:25px; color:#666;">
-            <i class="fab fa-apple-pay" style="color:white;"></i> <i class="fab fa-cc-visa" style="color:#1a1aff;"></i> <i class="fab fa-cc-mastercard" style="color:#ff5500;"></i>
+        <h2 style="color:var(--pink); margin-bottom:20px;">إتمام الدفع</h2>
+        <div style="font-size:30px; margin-bottom:20px; color:#aaa;">
+            <i class="fab fa-apple-pay"></i> <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i>
         </div>
         <input type="text" placeholder="رقم البطاقة" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white;">
-        <div style="display:flex; gap:10px;">
-            <input type="text" placeholder="MM/YY" style="width:50%; padding:12px; background:#000; border:1px solid #333; color:white;">
-            <input type="text" placeholder="CVV" style="width:50%; padding:12px; background:#000; border:1px solid #333; color:white;">
+        <button class="btn-main" onclick="customAlert('شكراً لشرائك!'); show('home')">تأكيد الدفع</button>
+    </div>
+</section>
+
+<section id="policy-page">
+    <div style="background:var(--card); padding:40px; border-radius:20px; max-width:800px; width:100%;">
+        <h2 style="color:var(--pink);">سياسة المتجر</h2>
+        <div style="margin-top:20px; color:#ccc; line-height:1.8;">
+            <p>1. المنتجات رقمية ولا تُسترد بعد الاستلام.</p>
+            <p>2. يمنع مشاركة الحسابات أو المفاتيح البرمجية.</p>
+            <p>3. الدعم متاح 24/7 عبر الدسكورد.</p>
         </div>
-        <button class="btn-main" style="margin-top:20px;" onclick="customAlert('تم الدفع بنجاح!'); show('home')">تأكيد الدفع</button>
+        <button class="btn-main" style="margin-top:20px; width:150px;" onclick="show('home')">رجوع</button>
     </div>
 </section>
 
 <footer id="footer">
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:40px;">
+        <div><h4 style="color:var(--pink);">VOID SWIFT</h4><p>وجهتك الأولى للأدوات الحصرية.</p></div>
         <div>
-            <h4 style="color:var(--pink);">VOID SWIFT</h4>
-            <p style="font-size:12px; color:grey; margin-top:10px;">المتجر رقم #1 في تنفيذ السكربتات.</p>
-        </div>
-        <div>
-            <h4 style="color:var(--pink);">روابط</h4>
-            <a onclick="show('policy')" class="footer-link">سياسة الاسترجاع</a>
+            <h4 style="color:var(--pink);">القوانين</h4>
+            <a onclick="show('policy')" class="footer-link">سياسة الاستخدام</a>
             <a onclick="show('policy')" class="footer-link">سياسة الخصوصية</a>
         </div>
         <div>
             <h4 style="color:var(--pink);">تواصل</h4>
-            <a href="mailto:swiftsa123a@gmail.com" class="footer-link"><i class="fas fa-envelope"></i> المراسلة</a>
-            <a href="https://discord.gg/voidswift" target="_blank" class="footer-link"><i class="fab fa-discord"></i> الدسكورد</a>
+            <a href="mailto:swiftsa123a@gmail.com" class="footer-link"><i class="fas fa-envelope"></i> المراسلة الفورية</a>
+            <a href="https://discord.gg/VScn6AgZhc" target="_blank" class="footer-link"><i class="fab fa-discord"></i> دسكورد VOID</a>
         </div>
     </div>
 </footer>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCWVnf3CKX2d8wI0NPATsqkLhmBabCgaB4",
-        authDomain: "swiftvoid-3e5a6.firebaseapp.com",
-        databaseURL: "https://swiftvoid-3e5a6-default-rtdb.firebaseio.com",
-        projectId: "swiftvoid-3e5a6",
-        storageBucket: "swiftvoid-3e5a6.firebasestorage.app",
-        messagingSenderId: "375536130124",
-        appId: "1:375536130124:web:a4ff59516a08b66da2fce9"
-    };
+    const firebaseConfig = { apiKey: "AIzaSyCWVnf3CKX2d8wI0NPATsqkLhmBabCgaB4", authDomain: "swiftvoid-3e5a6.firebaseapp.com", databaseURL: "https://swiftvoid-3e5a6-default-rtdb.firebaseio.com", projectId: "swiftvoid-3e5a6", storageBucket: "swiftvoid-3e5a6.firebasestorage.app", messagingSenderId: "375536130124", appId: "1:375536130124:web:a4ff59516a08b66da2fce9" };
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+    const auth = firebase.auth(); const db = firebase.database();
+    let isSignUp = false; let cartCount = 0; let generatedOTP = ""; let selectedStars = 5;
 
-    let isSignUp = false;
-    let cartCount = 0;
-    let generatedOTP = "";
+    function customAlert(m) { const a = document.getElementById('siteAlert'); a.innerText = m; a.style.display = 'block'; setTimeout(() => a.style.display = 'none', 3000); }
+    
+    function toggleAuth() { isSignUp = !isSignUp; document.getElementById('authTitle').innerText = isSignUp ? "إنشاء حساب" : "تسجيل دخول"; document.getElementById('signupOnly').style.display = isSignUp ? "block" : "none"; document.getElementById('mainBtn').innerText = isSignUp ? "إرسال الرمز" : "دخول"; }
 
-    function customAlert(m) {
-        const a = document.getElementById('siteAlert');
-        a.innerText = m; a.style.display = 'block';
-        setTimeout(() => a.style.display = 'none', 3000);
-    }
-
-    function toggleAuth() {
-        isSignUp = !isSignUp;
-        document.getElementById('authTitle').innerText = isSignUp ? "إنشاء حساب" : "تسجيل دخول";
-        document.getElementById('signupOnly').style.display = isSignUp ? "block" : "none";
-        document.getElementById('mainBtn').innerText = isSignUp ? "إرسال الرمز" : "دخول";
-    }
-
-    async function startAuthProcess() {
+    function sendOTP() {
         const e = document.getElementById('uEmail').value;
-        const p = document.getElementById('uPass').value;
-        if(!e || !p) return customAlert("أدخل البيانات");
-
-        // توليد رمز متغير
+        if(!e.includes('@')) return customAlert("البريد غير صحيح");
         generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
-        
-        if(isSignUp) {
-            try {
-                const res = await auth.createUserWithEmailAndPassword(e, p);
-                await res.user.sendEmailVerification();
-                document.getElementById('authStep1').style.display = 'none';
-                document.getElementById('authStep2').style.display = 'block';
-                customAlert("رمز التحقق المتغير هو: " + generatedOTP);
-            } catch (err) { customAlert(err.message); }
-        } else {
-            try {
-                await auth.signInWithEmailAndPassword(e, p);
-                loginDone();
-            } catch { customAlert("الحساب غير موجود"); }
-        }
+        document.getElementById('authStep1').style.display = 'none';
+        document.getElementById('authStep2').style.display = 'block';
+        document.getElementById('otpHint').innerText = "الرمز هو: " + generatedOTP;
+        customAlert("تم توليد رمز التحقق");
     }
 
-    function verifyOTP() {
+    async function verifyOTP() {
         if(document.getElementById('otpCode').value === generatedOTP) {
-            loginDone();
-        } else {
-            customAlert("الرمز خاطئ");
-        }
+            const e = document.getElementById('uEmail').value; const p = document.getElementById('uPass').value;
+            try {
+                if(isSignUp) await auth.createUserWithEmailAndPassword(e, p);
+                else await auth.signInWithEmailAndPassword(e, p);
+                startApp();
+            } catch { customAlert("خطأ في البيانات"); }
+        } else { customAlert("الرمز خاطئ"); }
     }
 
-    function loginDone() {
+    function startApp() {
         document.getElementById('bodyTag').classList.remove('matrix-bg');
         document.getElementById('auth-page').classList.remove('active');
         document.getElementById('navbar').style.display = 'flex';
         document.getElementById('footer').style.display = 'block';
-        show('home');
-        loadReviews();
+        show('home'); loadReviews();
     }
 
-    function show(id) {
-        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id + '-page').classList.add('active');
-        window.scrollTo(0,0);
+    function show(id) { document.querySelectorAll('section').forEach(s => s.classList.remove('active')); document.getElementById(id + '-page').classList.add('active'); window.scrollTo(0,0); if(id==='home') toggleCart(true); }
+    
+    function toggleCart(forceClose) { 
+        const cart = document.getElementById('cartSidebar');
+        if(forceClose) cart.classList.remove('open');
+        else cart.classList.toggle('open'); 
     }
 
-    function toggleCart() { document.getElementById('cartSidebar').classList.toggle('open'); }
-
-    function addToCart(n, p) {
-        cartCount++;
-        document.getElementById('cartBadge').innerText = cartCount;
-        const items = document.getElementById('cartItems');
-        if(items.innerHTML.includes('فارغة')) items.innerHTML = "";
-        items.innerHTML += `<div style="padding:10px; border-bottom:1px solid #333;">${n} - ${p} SAR</div>`;
-        customAlert("تمت الإضافة!");
+    function addToCart(n, p) { cartCount++; document.getElementById('cartBadge').innerText = cartCount; customAlert("تمت الإضافة!"); }
+    
+    function setStars(n) { selectedStars = n; const stars = document.getElementById('starInput').children; for(let i=0; i<5; i++) stars[i].style.color = (i < n) ? '#ffcc00' : '#444'; }
+    
+    function addReview() {
+        const t = document.getElementById('revTxt').value; if(!t) return;
+        db.ref('store_reviews').push({ text: t, stars: selectedStars });
+        document.getElementById('revTxt').value = ""; customAlert("تم النشر!");
     }
 
     function loadReviews() {
         db.ref('store_reviews').on('value', snap => {
-            const list = document.getElementById('revList');
-            list.innerHTML = "";
+            const list = document.getElementById('revList'); list.innerHTML = "";
             if(snap.val()) {
-                Object.values(snap.val()).forEach(r => {
-                    list.innerHTML += `<div class="rev-card"><b>مستخدم VOID</b><p>${r.text}</p></div>`;
+                Object.values(snap.val()).reverse().forEach(r => {
+                    let s = ""; for(let i=0; i<r.stars; i++) s += "⭐";
+                    list.innerHTML += `<div class="rev-card"><b>مستخدم VOID</b> <span style="font-size:12px;">${s}</span><p>${r.text}</p></div>`;
                 });
             }
         });
