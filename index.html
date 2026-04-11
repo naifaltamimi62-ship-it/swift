@@ -152,7 +152,6 @@
 </footer>
 
 <script>
-    // نظام الأغنية (شحط 217)
     var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -180,43 +179,37 @@
         document.getElementById('toggleText').innerText = isSignUp ? "لديك حساب؟ سجل دخولك" : "إنشاء حساب جديد؟";
     }
 
-    // الدالة المحدثة بـ ActionCodeSettings
     async function handleAuth() {
         const email = document.getElementById('uEmail').value;
         const pass = document.getElementById('uPass').value;
+        if(!email.includes('@')) return customAlert("خطأ: يرجى إدخال إيميل صحيح");
+        if(pass.length < 6) return customAlert("خطأ: الباسورد لازم 6 خانات أو أكثر");
 
-        if(!email.includes('@')) return customAlert("خطأ: الإيميل ناقص @");
-        if(pass.length < 6) return customAlert("خطأ: الباسورد لازم 6 خانات");
-
-        // إعدادات إعادة التوجيه لضمان قبول جوجل للإرسال
         const actionCodeSettings = {
-            url: window.location.href, // يرجع المستخدم لنفس الرابط بعد الضغط
+            url: 'https://swiftvoid-3e5a6.firebaseapp.com',
             handleCodeInApp: true
         };
 
         try {
             if(isSignUp) {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-                // إرسال الإيميل مع الإعدادات الجديدة
                 await userCredential.user.sendEmailVerification(actionCodeSettings);
-                
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('verifyStep').style.display = 'block';
-                customAlert("تم الإرسال! شيك بريدك (بما في ذلك الـ Spam)");
+                customAlert("أرسلنا رابط التفعيل! شيك الإيميل");
             } else {
                 const userCredential = await auth.signInWithEmailAndPassword(email, pass);
                 await userCredential.user.reload();
-                
                 if(auth.currentUser.emailVerified) {
                     if (player) player.stopVideo(); 
                     startApp();
                 } else {
                     await auth.signOut();
-                    customAlert("حسابك موجود بس فعله من الإيميل!");
+                    customAlert("لازم تفعل حسابك من الرابط اللي جاك بالإيميل!");
                 }
             }
         } catch (error) {
-            customAlert("خطأ: " + error.message);
+            customAlert("Firebase: " + error.message);
         }
     }
 
@@ -227,7 +220,7 @@
             if (player) player.stopVideo(); 
             startApp();
         } else {
-            customAlert("للحين ما فعلت الحساب.. شيك البريد!");
+            customAlert("للحين ما فعلت الحساب.. شيك البريد (Spam)");
         }
     }
 
