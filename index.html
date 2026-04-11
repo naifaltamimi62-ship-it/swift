@@ -165,12 +165,11 @@
         });
     }
 
-    // إعدادات فايربيس
     const firebaseConfig = { apiKey: "AIzaSyCWVnf3CKX2d8wI0NPATsqkLhmBabCgaB4", authDomain: "swiftvoid-3e5a6.firebaseapp.com", databaseURL: "https://swiftvoid-3e5a6-default-rtdb.firebaseio.com", projectId: "swiftvoid-3e5a6", storageBucket: "swiftvoid-3e5a6.firebasestorage.app", messagingSenderId: "375536130124", appId: "1:375536130124:web:a4ff59516a08b66da2fce9" };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(); const db = firebase.database();
 
-    let isSignUp = false; let cartCount = 0;
+    let isSignUp = false; let cartCount = 0; let selectedStars = 5;
 
     function customAlert(m) { const a = document.getElementById('siteAlert'); a.innerText = m; a.style.display = 'block'; setTimeout(() => a.style.display = 'none', 4000); }
 
@@ -181,41 +180,42 @@
         document.getElementById('toggleText').innerText = isSignUp ? "لديك حساب؟ سجل دخولك" : "إنشاء حساب جديد؟";
     }
 
-    // نظام اللوقن الواقعي
+    // دالة handleAuth المحدثة بالكامل
     async function handleAuth() {
         const email = document.getElementById('uEmail').value;
         const pass = document.getElementById('uPass').value;
 
-        if(!email.includes('@')) return customAlert("خطأ: يرجى إدخال بريد إلكتروني صحيح يحتوي على @");
-        if(pass.length === 0) return customAlert("خطأ: يرجى إدخال كلمة المرور");
+        if(!email.includes('@')) return customAlert("خطأ: يرجى إدخال بريد إلكتروني صحيح");
+        if(pass.length < 6) return customAlert("خطأ: كلمة المرور يجب أن تكون 6 خانات على الأقل");
 
         try {
             if(isSignUp) {
-                // إنشاء حساب جديد
                 const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
                 await userCredential.user.sendEmailVerification();
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('verifyStep').style.display = 'block';
-                customAlert("تم إنشاء الحساب! تفقد إيميلك لتفعيله.");
+                customAlert("تم إرسال رابط التحقق! افحص بريدك الآن.");
             } else {
-                // تسجيل دخول
                 const userCredential = await auth.signInWithEmailAndPassword(email, pass);
-                if(userCredential.user.emailVerified) {
+                await userCredential.user.reload();
+                if(auth.currentUser.emailVerified) {
                     if (player) player.stopVideo(); 
                     startApp();
                 } else {
                     await auth.signOut();
-                    customAlert("خطأ: هذا الحساب لم يتم تفعيله بعد من الإيميل!");
+                    customAlert("لم يتم تفعيل الحساب! افحص بريدك (بما في ذلك الـ Spam).");
                 }
             }
         } catch (error) {
-            if(error.code === "auth/wrong-password") customAlert("خطأ: كلمة المرور غير صحيحة!");
-            else if(error.code === "auth/user-not-found") customAlert("خطأ: هذا الحساب غير موجود!");
+            if(error.code === "auth/wrong-password") customAlert("كلمة المرور خاطئة");
+            else if(error.code === "auth/user-not-found") customAlert("الحساب غير موجود");
+            else if(error.code === "auth/email-already-in-use") customAlert("هذا الإيميل مسجل مسبقاً");
             else customAlert("خطأ: " + error.message);
         }
     }
 
     async function checkEmailVerified() {
+        if(!auth.currentUser) return;
         await auth.currentUser.reload();
         if(auth.currentUser.emailVerified) {
             if (player) player.stopVideo(); 
@@ -233,7 +233,6 @@
         show('home'); loadReviews();
     }
 
-    // باقي الأكواد البرمجية (السلة، التحميل، التقييم)
     function addToCart(name, price) {
         cartCount++;
         document.getElementById('cartBadge').innerText = cartCount;
