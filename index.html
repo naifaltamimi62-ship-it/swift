@@ -180,44 +180,41 @@
         document.getElementById('toggleText').innerText = isSignUp ? "لديك حساب؟ سجل دخولك" : "إنشاء حساب جديد؟";
     }
 
-    // دالة handleAuth الجديدة لضمان إرسال الإيميل
+    // نظام التحقق الصارم
     async function handleAuth() {
         const email = document.getElementById('uEmail').value;
         const pass = document.getElementById('uPass').value;
 
-        if(!email.includes('@')) return customAlert("خطأ: يرجى إدخال بريد إلكتروني صحيح");
-        if(pass.length < 6) return customAlert("خطأ: كلمة المرور يجب أن تكون 6 خانات على الأقل");
+        if(!email.includes('@')) return customAlert("خطأ: يرجى إدخال إيميل صحيح");
+        if(pass.length < 6) return customAlert("خطأ: الباسورد لازم 6 أحرف أو أكثر");
 
         try {
             if(isSignUp) {
-                // إنشاء الحساب وانتظار النتيجة
+                // إنشاء الحساب
                 const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-                const user = userCredential.user;
+                // إرسال رابط التفعيل فوراً
+                await userCredential.user.sendEmailVerification();
                 
-                // إرسال طلب التحقق والتأكد من نجاح الطلب
-                await user.sendEmailVerification().then(() => {
-                    document.getElementById('authBox').style.display = 'none';
-                    document.getElementById('verifyStep').style.display = 'block';
-                    customAlert("أرسلنا الرابط! شيك على البريد الوارد أو الـ Spam");
-                }).catch((error) => {
-                    customAlert("مشكلة في الإرسال: " + error.message);
-                });
-
+                document.getElementById('authBox').style.display = 'none';
+                document.getElementById('verifyStep').style.display = 'block';
+                customAlert("أرسلنا رابط التفعيل! شيك الإيميل");
             } else {
+                // تسجيل دخول
                 const userCredential = await auth.signInWithEmailAndPassword(email, pass);
                 await userCredential.user.reload();
+                
+                // شرط التحقق: إذا ما ضغط الرابط ما يدخل
                 if(auth.currentUser.emailVerified) {
                     if (player) player.stopVideo(); 
                     startApp();
                 } else {
                     await auth.signOut();
-                    customAlert("حسابك موجود بس ما فعلته من الإيميل!");
+                    customAlert("لازم تفعل حسابك من الرابط اللي جاك بالإيميل!");
                 }
             }
         } catch (error) {
-            if(error.code === "auth/wrong-password") customAlert("الباسوورد غلط!");
-            else if(error.code === "auth/user-not-found") customAlert("الحساب مو موجود!");
-            else if(error.code === "auth/too-many-requests") customAlert("محاولات كثيرة، جرب بعد شوي");
+            if(error.code === "auth/wrong-password") customAlert("الباسورد خطأ!");
+            else if(error.code === "auth/user-not-found") customAlert("الحساب غير موجود!");
             else customAlert("خطأ: " + error.message);
         }
     }
@@ -229,7 +226,7 @@
             if (player) player.stopVideo(); 
             startApp();
         } else {
-            customAlert("لم يتم تفعيل الحساب بعد، يرجى التحقق من الرسالة في بريدك.");
+            customAlert("للحين ما فعلت الحساب.. شيك البريد (Spam)");
         }
     }
 
@@ -254,7 +251,7 @@
     }
 
     function goToCheckout() {
-        if (cartCount === 0) customAlert("لا يمكنك الدفع والسلة فارغة!");
+        if (cartCount === 0) customAlert("السلة فارغة!");
         else show('checkout');
     }
 
