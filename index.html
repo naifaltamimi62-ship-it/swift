@@ -180,7 +180,7 @@
         document.getElementById('toggleText').innerText = isSignUp ? "لديك حساب؟ سجل دخولك" : "إنشاء حساب جديد؟";
     }
 
-    // دالة handleAuth المحدثة بالكامل
+    // دالة handleAuth الجديدة لضمان إرسال الإيميل
     async function handleAuth() {
         const email = document.getElementById('uEmail').value;
         const pass = document.getElementById('uPass').value;
@@ -190,11 +190,19 @@
 
         try {
             if(isSignUp) {
+                // إنشاء الحساب وانتظار النتيجة
                 const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-                await userCredential.user.sendEmailVerification();
-                document.getElementById('authBox').style.display = 'none';
-                document.getElementById('verifyStep').style.display = 'block';
-                customAlert("تم إرسال رابط التحقق! افحص بريدك الآن.");
+                const user = userCredential.user;
+                
+                // إرسال طلب التحقق والتأكد من نجاح الطلب
+                await user.sendEmailVerification().then(() => {
+                    document.getElementById('authBox').style.display = 'none';
+                    document.getElementById('verifyStep').style.display = 'block';
+                    customAlert("أرسلنا الرابط! شيك على البريد الوارد أو الـ Spam");
+                }).catch((error) => {
+                    customAlert("مشكلة في الإرسال: " + error.message);
+                });
+
             } else {
                 const userCredential = await auth.signInWithEmailAndPassword(email, pass);
                 await userCredential.user.reload();
@@ -203,13 +211,13 @@
                     startApp();
                 } else {
                     await auth.signOut();
-                    customAlert("لم يتم تفعيل الحساب! افحص بريدك (بما في ذلك الـ Spam).");
+                    customAlert("حسابك موجود بس ما فعلته من الإيميل!");
                 }
             }
         } catch (error) {
-            if(error.code === "auth/wrong-password") customAlert("كلمة المرور خاطئة");
-            else if(error.code === "auth/user-not-found") customAlert("الحساب غير موجود");
-            else if(error.code === "auth/email-already-in-use") customAlert("هذا الإيميل مسجل مسبقاً");
+            if(error.code === "auth/wrong-password") customAlert("الباسوورد غلط!");
+            else if(error.code === "auth/user-not-found") customAlert("الحساب مو موجود!");
+            else if(error.code === "auth/too-many-requests") customAlert("محاولات كثيرة، جرب بعد شوي");
             else customAlert("خطأ: " + error.message);
         }
     }
