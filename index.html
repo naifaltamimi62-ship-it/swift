@@ -43,6 +43,9 @@
 
         .download-box { display:none; flex-direction:column; align-items:center; background:var(--card); padding:30px; border-radius:20px; border:1px solid var(--pink); }
 
+        /* ستايل التنبيه الجديد */
+        .spam-notice { margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px dashed var(--pink); font-size: 11px; color: #ccc; line-height: 1.5; }
+
         @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
     </style>
 </head>
@@ -82,6 +85,10 @@
         
         <button onclick="handleAuth()" class="btn-main" id="mainBtn">دخول</button>
         <p onclick="toggleAuth()" id="toggleText" style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--purple);">إنشاء حساب جديد؟</p>
+        
+        <div class="spam-notice">
+            <i class="fas fa-info-circle"></i> إذا لم تجد رسالة التحقق، يرجى فحص مجلد <b>الرسائل غير المرغوب فيها (Spam)</b> أو العروض الترويجية.
+        </div>
     </div>
 
     <div id="verifyStep" style="background:rgba(10,4,20,0.95); border:2px solid var(--pink); padding:40px; border-radius:20px; width:400px; text-align:center; display:none;">
