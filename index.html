@@ -180,42 +180,43 @@
         document.getElementById('toggleText').innerText = isSignUp ? "لديك حساب؟ سجل دخولك" : "إنشاء حساب جديد؟";
     }
 
-    // نظام التحقق الصارم
+    // الدالة المحدثة بـ ActionCodeSettings
     async function handleAuth() {
         const email = document.getElementById('uEmail').value;
         const pass = document.getElementById('uPass').value;
 
-        if(!email.includes('@')) return customAlert("خطأ: يرجى إدخال إيميل صحيح");
-        if(pass.length < 6) return customAlert("خطأ: الباسورد لازم 6 أحرف أو أكثر");
+        if(!email.includes('@')) return customAlert("خطأ: الإيميل ناقص @");
+        if(pass.length < 6) return customAlert("خطأ: الباسورد لازم 6 خانات");
+
+        // إعدادات إعادة التوجيه لضمان قبول جوجل للإرسال
+        const actionCodeSettings = {
+            url: window.location.href, // يرجع المستخدم لنفس الرابط بعد الضغط
+            handleCodeInApp: true
+        };
 
         try {
             if(isSignUp) {
-                // إنشاء الحساب
                 const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-                // إرسال رابط التفعيل فوراً
-                await userCredential.user.sendEmailVerification();
+                // إرسال الإيميل مع الإعدادات الجديدة
+                await userCredential.user.sendEmailVerification(actionCodeSettings);
                 
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('verifyStep').style.display = 'block';
-                customAlert("أرسلنا رابط التفعيل! شيك الإيميل");
+                customAlert("تم الإرسال! شيك بريدك (بما في ذلك الـ Spam)");
             } else {
-                // تسجيل دخول
                 const userCredential = await auth.signInWithEmailAndPassword(email, pass);
                 await userCredential.user.reload();
                 
-                // شرط التحقق: إذا ما ضغط الرابط ما يدخل
                 if(auth.currentUser.emailVerified) {
                     if (player) player.stopVideo(); 
                     startApp();
                 } else {
                     await auth.signOut();
-                    customAlert("لازم تفعل حسابك من الرابط اللي جاك بالإيميل!");
+                    customAlert("حسابك موجود بس فعله من الإيميل!");
                 }
             }
         } catch (error) {
-            if(error.code === "auth/wrong-password") customAlert("الباسورد خطأ!");
-            else if(error.code === "auth/user-not-found") customAlert("الحساب غير موجود!");
-            else customAlert("خطأ: " + error.message);
+            customAlert("خطأ: " + error.message);
         }
     }
 
@@ -226,7 +227,7 @@
             if (player) player.stopVideo(); 
             startApp();
         } else {
-            customAlert("للحين ما فعلت الحساب.. شيك البريد (Spam)");
+            customAlert("للحين ما فعلت الحساب.. شيك البريد!");
         }
     }
 
