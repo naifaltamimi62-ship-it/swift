@@ -12,627 +12,325 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-        
-        :root {
-            --pink: #d42a8b;
-            --purple: #7b2cbf;
-            --bg-dark: #0f051d;
-            --bg-lighter: #160a29;
-            --card-bg: #1a0b2e;
-            --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --transition: 0.3s ease;
-        }
+        :root { --pink: #d42a8b; --purple: #7b2cbf; --bg: #0f051d; --card: #1a0b2e; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
+        body { background:var(--bg); color:white; overflow-x:hidden; scroll-behavior: smooth; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
-        }
+        /* Backgrounds & Announcement */
+        .announcement-bar { background: linear-gradient(90deg, var(--purple), var(--pink)); color: white; text-align: center; padding: 12px; font-weight: bold; position: fixed; top: 0; width: 100%; z-index: 2000; font-size: 14px; }
+        .matrix-bg { background: linear-gradient(rgba(15, 5, 29, 0.9), rgba(15, 5, 29, 0.9)), url('https://i.makeagif.com/media/12-28-2015/v-3InG.gif'); background-size: cover; position: fixed; width: 100%; height: 100%; z-index: -1; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
+        /* Navbar */
+        header { position:fixed; top:45px; width:100%; padding:15px 8%; background:rgba(26,11,46,0.95); display:none; justify-content:space-between; align-items:center; z-index:1000; border-bottom:2px solid var(--pink); }
+        .logo { font-weight:900; color:var(--pink); font-size:26px; cursor: pointer; text-decoration: none; }
+        .nav-links { display: flex; gap: 25px; }
+        .nav-links li { cursor: pointer; font-weight: 700; transition: 0.3s; list-style: none; }
+        .nav-links li:hover { color: var(--pink); }
 
-        a { text-decoration: none; color: inherit; transition: var(--transition); }
-        ul { list-style: none; }
-        input, button { border: none; outline: none; transition: var(--transition); }
+        /* Sections */
+        section { display:none; padding:180px 8% 50px; min-height:100vh; flex-direction:column; align-items:center; width: 100%; }
+        .active { display:flex; animation: fadeIn 0.5s ease; }
 
-        /* Announcement Bar */
-        .announcement-bar {
-            background: linear-gradient(90deg, var(--purple), var(--pink));
-            color: white;
-            text-align: center;
-            padding: 12px;
-            font-weight: 700;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 2000;
-            font-size: 14px;
-        }
+        /* Auth Box */
+        .auth-container { background:rgba(10,4,20,0.95); border:2px solid var(--pink); padding:50px; border-radius:25px; width:100%; max-width:450px; text-align:center; box-shadow: 0 0 20px var(--pink); }
+        .auth-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: white; border-radius: 10px; }
+        .btn-main { background:linear-gradient(90deg, var(--pink), var(--purple)); color:white; border:none; padding:15px; border-radius:12px; font-weight:700; cursor:pointer; width:100%; transition: 0.3s; margin-top: 10px; }
+        .btn-main:hover { transform: scale(1.05); }
+        .spam-notice { margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px dashed var(--pink); font-size: 12px; color: #ccc; }
 
-        /* Matrix BG for Login */
-        .matrix-bg {
-            background: linear-gradient(rgba(15, 5, 29, 0.9), rgba(15, 5, 29, 0.9)), url('https://i.makeagif.com/media/12-28-2015/v-3InG.gif');
-            background-size: cover;
-            background-position: center;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
+        /* Product Layout (360 Degree) */
+        .product-page-container { display: flex; gap: 50px; background: var(--card); padding: 50px; border-radius: 30px; width: 100%; max-width: 1100px; border: 1px solid #444; align-items: flex-start; }
+        .p-image-side { flex: 1; }
+        .p-info-side { flex: 1; text-align: right; display: flex; flex-direction: column; gap: 20px; }
+        .main-img { width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .price-tag { font-size: 30px; font-weight: 900; color: var(--pink); }
 
-        /* Header / Navbar */
-        header {
-            position: fixed;
-            top: 45px;
-            width: 100%;
-            padding: 20px 8%;
-            background: rgba(15, 5, 29, 0.95);
-            display: none;
-            justify-content: space-between;
-            align-items:center;
-            z-index: 1000;
-            border-bottom: 2px solid var(--pink);
-            transition: var(--transition);
-        }
+        /* Reviews */
+        .reviews-box { width: 100%; max-width: 1100px; margin-top: 50px; }
+        .rev-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; margin-bottom: 15px; border-right: 4px solid var(--pink); }
+        .star-input { color: #ffcc00; font-size: 25px; cursor: pointer; margin-bottom: 10px; }
 
-        .logo { font-weight: 900; color: var(--pink); font-size: 26px; cursor: pointer; }
-        .nav-links { display: flex; gap: 30px; }
-        .nav-links li { font-size: 16px; font-weight: 600; cursor: pointer; }
-        .nav-links li:hover, .nav-links li.active { color: var(--pink); }
+        /* FAQ & Policy */
+        .faq-item { background: var(--card); border: 1px solid #333; border-radius: 15px; width: 100%; max-width: 900px; margin-bottom: 15px; cursor: pointer; transition: 0.3s; }
+        .faq-q { padding: 20px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .faq-a { padding: 0 20px; max-height: 0; overflow: hidden; transition: 0.3s; color: #aaa; }
+        .faq-item.open { border-color: var(--pink); }
+        .faq-item.open .faq-a { max-height: 200px; padding-bottom: 20px; }
 
-        .nav-icons { display: flex; gap: 20px; align-items: center; }
-        .icon { font-size: 20px; cursor: pointer; color: var(--text-muted); }
-        .icon:hover { color: var(--pink); }
-        #cartBadge { background: var(--pink); color: white; border-radius: 50%; padding: 2px 7px; font-size: 11px; position: absolute; top: -10px; right: -10px; }
-
-        /* Cart Sidebar */
-        .cart-sidebar {
-            position: fixed;
-            top: 0;
-            left: -380px;
-            width: 380px;
-            height: 100%;
-            background: var(--card-bg);
-            z-index: 3000;
-            transition: 0.5s ease;
-            padding: 30px;
-            border-right: 2px solid var(--pink);
-            box-shadow: 10px 0 20px rgba(0,0,0,0.5);
-        }
+        /* Cart & Footer */
+        .cart-sidebar { position: fixed; top: 0; left: -400px; width: 400px; height: 100%; background: var(--card); z-index: 3000; transition: 0.5s; padding: 40px; border-right: 2px solid var(--pink); }
         .cart-sidebar.open { left: 0; }
-        .close-cart { font-size: 28px; cursor: pointer; color: var(--pink); margin-bottom: 30px; float: left; }
-        .cart-title { font-size: 22px; color: var(--text-main); margin-bottom: 20px; text-align: center; }
-        .cart-item-row { background: rgba(255,255,255,0.05); padding: 18px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .cart-item-info { display: flex; flex-direction: column; gap: 5px; }
-        .remove-item { color: var(--text-muted); cursor: pointer; }
-        .remove-item:hover { color: red; }
-        .cart-total { margin-top: 30px; font-size: 18px; font-weight: 700; text-align: center; }
-        .cart-empty { color: var(--text-muted); text-align: center; font-size: 16px; margin-top: 50px; }
+        .site-alert { position: fixed; top: 80px; right: 20px; background: var(--pink); padding: 15px 25px; border-radius: 10px; z-index: 5000; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        footer { background: #080311; padding: 60px 8%; border-top: 1px solid #222; width: 100%; display: none; margin-top: 50px; }
 
-        /* Sections and Pages */
-        section { display: none; padding: 160px 8% 80px; min-height: 100vh; flex-direction: column; align-items: center; width: 100%; }
-        .active { display: flex; animation: fadeIn 0.6s ease; }
-
-        /* Auth Page */
-        #auth-page { justify-content: center; padding-top: 80px; }
-        .auth-container { background: rgba(10,4,20,0.95); border: 2px solid var(--pink); padding: 50px; border-radius: 25px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 10px 30px rgba(212, 42, 139, 0.3); }
-        .auth-container h2 { color: var(--pink); margin-bottom: 30px; font-size: 28px; font-weight: 900; }
-        .auth-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: white; border-radius: 10px; font-size: 15px; }
-        .auth-input:focus { border-color: var(--pink); }
-        
-        .spam-notice { margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px dashed var(--pink); font-size: 13px; color: #ccc; line-height: 1.6; text-align: right; }
-        .spam-notice i { color: var(--pink); margin-left: 5px; }
-
-        /* Buttons */
-        .btn-main { background: linear-gradient(90deg, var(--pink), var(--purple)); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; width: 100%; transition: var(--transition); box-shadow: 0 4px 15px rgba(212, 42, 139, 0.4); }
-        .btn-main:hover { transform: scale(1.03); opacity: 0.95; box-shadow: 0 6px 20px rgba(212, 42, 139, 0.6); }
-
-        /* Home Page - Hero Section */
-        .hero { text-align: center; background: linear-gradient(180deg, var(--bg-lighter), var(--bg-dark)); width: 100%; padding: 120px 8% 80px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .hero-logo { width: 150px; margin-bottom: 20px; animation: bounce 2s infinite; }
-        .hero h1 { font-size: 48px; font-weight: 900; color: var(--pink); }
-        .hero p { font-size: 18px; color: var(--text-muted); max-width: 600px; line-height: 1.8; }
-
-        /* Products Grid */
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; width: 100%; max-width: 1200px; padding: 60px 0; }
-        .product-card { background: var(--card-bg); border: 1px solid #333; padding: 25px; border-radius: 20px; text-align: center; cursor: pointer; transition: var(--transition); }
-        .product-card:hover { transform: translateY(-10px); border-color: var(--pink); box-shadow: 0 10px 30px rgba(212, 42, 139, 0.2); }
-        .product-img { width: 100%; border-radius: 15px; margin-bottom: 20px; }
-        .product-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
-        .product-price { color: var(--pink); font-weight: 900; font-size: 22px; margin: 15px 0; }
-        .star-rating { color: #ffcc00; font-size: 16px; margin-bottom: 15px; }
-
-        /* Details Page - (Modified layout) */
-        #details-page { padding-top: 180px; align-items: center; }
-        .details-container { background: var(--card-bg); padding: 50px; border-radius: 30px; max-width: 1100px; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; border: 1px solid #333; }
-        
-        /* Product Image (Right side) */
-        .details-img-container { display: flex; justify-content: center; align-items: center; }
-        .details-img { width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        /* Product Info (Left side) */
-        .details-info { display: flex; flex-direction: column; gap: 20px; }
-        .details-title { font-size: 36px; font-weight: 900; color: var(--pink); }
-        .details-price { font-size: 32px; font-weight: 900; color: var(--text-main); }
-        
-        .details-description { font-size: 16px; color: var(--text-muted); line-height: 1.8; text-align: right; }
-        .details-description ul { margin-right: 20px; list-style: disc; }
-
-        /* Add Review Section */
-        .review-section { margin-top: 50px; width: 100%; }
-        .review-input-group { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 20px; border: 1px solid #333; margin-bottom: 30px; }
-        .review-input-group h4 { margin-bottom: 15px; }
-        .rev-input { width: 100%; padding: 15px; background: #000; border: 1px solid #333; color: white; border-radius: 10px; margin-bottom: 15px; font-size: 15px; }
-        
-        /* Checkout Page */
-        .checkout-container { background: var(--card-bg); padding: 50px; border-radius: 25px; max-width: 600px; width: 100%; text-align: center; border: 1px solid #333; }
-        .payment-icons { font-size: 40px; margin-bottom: 20px; color: var(--text-muted); display: flex; gap: 15px; justify-content: center; }
-
-        /* Policy Section (Modified style) */
-        #policy-page { padding-top: 180px; align-items: center; }
-        .policy-container { background: var(--card-bg); padding: 50px; border-radius: 25px; max-width: 900px; width: 100%; border: 1px solid #333; }
-        .policy-item { margin-bottom: 30px; }
-        .policy-title { color: var(--pink); font-size: 20px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .policy-text { color: var(--text-muted); line-height: 1.8; font-size: 16px; padding-right: 30px; }
-
-        /* FAQ Section (New Accordion Style) */
-        #faq-page { padding-top: 180px; align-items: center; }
-        .faq-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 15px; }
-        .faq-item { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; overflow: hidden; transition: var(--transition); }
-        .faq-question { padding: 20px; font-weight: 700; font-size: 17px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
-        .faq-question:hover { color: var(--pink); }
-        .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; color: var(--text-muted); line-height: 1.8; transition: max-height 0.3s ease, padding 0.3s ease; }
-        .faq-item.open .faq-answer { max-height: 200px; padding: 20px; }
-        .faq-icon { transition: transform 0.3s ease; color: var(--pink); }
-        .faq-item.open .faq-icon { transform: rotate(180deg); }
-
-        /* Ownership & Security */
-        .ownership-box { background: rgba(123, 44, 191, 0.05); padding: 30px; border-radius: 20px; margin-top: 50px; border-right: 4px solid var(--pink); width: 100%; max-width: 900px; }
-        .ownership-title { color: var(--pink); font-size: 19px; font-weight: 700; margin-bottom: 10px; }
-        .ownership-text { color: #ccc; line-height: 1.7; font-size: 15px; }
-
-        /* Review Card */
-        .rev-card { background: rgba(123, 44, 191, 0.05); padding: 25px; border-radius: 18px; border-right: 4px solid var(--pink); margin-bottom: 20px; width: 100%; border-top: 1px solid #333; border-bottom: 1px solid #333; border-left: 1px solid #333; }
-        .rev-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-
-        /* Footer */
-        footer { background: #080311; padding: 80px 8%; border-top: 1px solid #222; width: 100%; display: none; margin-top: auto; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 50px; }
-        .footer-col h4 { color: var(--pink); margin-bottom: 20px; font-size: 18px; }
-        .footer-link { color: #aaaaaa; text-decoration: none; cursor: pointer; display: block; margin-bottom: 12px; font-size: 15px; }
-        .footer-link:hover { color: var(--pink); padding-right: 5px; }
-        .footer-bottom { text-align: center; color: var(--text-muted); margin-top: 50px; font-size: 13px; }
-
-        /* Alert and Animations */
-        .site-alert { position: fixed; top: 100px; right: 20px; background: var(--pink); padding: 18px 25px; border-radius: 12px; z-index: 5000; display: none; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-        
         @keyframes fadeIn { from {opacity:0; transform: translateY(20px);} to {opacity:1; transform: translateY(0);} }
-        @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
-
     </style>
 </head>
 <body>
 
-<div class="matrix-bg" id="matrixBgTag"></div>
-
-<div class="announcement-bar">📢 استعدوا.. تحديث V3 القادم قريباً بمميزات خرافية!</div>
-
+<div class="matrix-bg" id="bgLayer"></div>
+<div id="youtube-player" style="display: none;"></div>
+<div class="announcement-bar">📢 تنبيه: تأكد من تحميل التحديث الأخير لضمان الحماية التامة!</div>
 <div class="site-alert" id="siteAlert"></div>
-
-<div class="cart-sidebar" id="cartSidebar">
-    <div class="close-cart" onclick="toggleCart()"><i class="fas fa-times"></i></div>
-    <div class="cart-title">السلة</div>
-    <hr style="border-color: #333; margin-bottom: 20px;">
-    <div id="cartList">
-        <p id="emptyText" class="cart-empty">السلة فارغة، أضف بعض المنتجات!</p>
-    </div>
-    <div style="position:absolute; bottom:30px; width:calc(100% - 60px);">
-        <div class="cart-total" id="cartTotal">الإجمالي: 0.00 SAR</div>
-        <button class="btn-main" onclick="goToCheckout()" style="margin-top:20px;">إتمام الشراء</button>
-    </div>
-</div>
 
 <header id="navbar">
     <div class="logo" onclick="show('home')">VOID SWIFT</div>
     <ul class="nav-links">
-        <li onclick="show('home')" class="active">الرئيسية</li>
+        <li onclick="show('home')">الرئيسية</li>
         <li onclick="show('policy')">السياسة</li>
         <li onclick="show('faq')">الأسئلة الشائعة</li>
     </ul>
-    <div class="nav-icons">
-        <div style="position:relative; cursor:pointer;" onclick="toggleCart()">
-            <i class="fas fa-shopping-basket icon"></i>
-            <span id="cartBadge">0</span>
-        </div>
-        <i class="fas fa-user-circle icon"></i>
+    <div onclick="toggleCart()" style="cursor:pointer; position:relative; font-size: 20px;">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="cartBadge" style="background:var(--pink); border-radius:50%; padding:2px 7px; font-size:12px; position:absolute; top:-12px; right:-12px;">0</span>
     </div>
 </header>
 
-<section id="auth-page" class="active">
+<section id="auth-page" class="active" style="justify-content:center;">
     <div id="authBox" class="auth-container">
-        <h2>أهلاً بك في Void Swift</h2>
+        <h2 id="authTitle" style="color:var(--pink); margin-bottom:30px; font-weight:900;">تسجيل الدخول</h2>
         <input type="email" id="uEmail" class="auth-input" placeholder="البريد الإلكتروني">
         <input type="password" id="uPass" class="auth-input" placeholder="كلمة المرور">
-        
         <button onclick="handleAuth()" class="btn-main" id="mainBtn">دخول للمتجر</button>
-        <p onclick="toggleAuth()" id="toggleText" style="margin-top:20px; font-size:13px; cursor:pointer; color:var(--purple); font-weight:600;">إنشاء حساب جديد؟</p>
-        
+        <p onclick="toggleAuth()" id="toggleText" style="margin-top:20px; font-size:14px; cursor:pointer; color:var(--purple); font-weight:700;">إنشاء حساب جديد؟</p>
         <div class="spam-notice">
-            <i class="fas fa-info-circle"></i> تنبيه: إذا لم تجد رسالة التحقق في الوارد، يرجى فحص مجلد <b>الرسائل غير المرغوب فيها (Spam)</b> أو العروض الترويجية.
+            <i class="fas fa-exclamation-triangle"></i> إذا لم تجد رسالة التفعيل، يرجى فحص مجلد <b>الرسائل غير المرغوب فيها (Spam)</b>.
         </div>
     </div>
 
     <div id="verifyStep" class="auth-container" style="display:none;">
-        <h2>تأكيد الحساب</h2>
-        <p style="margin:20px 0; color:#00ffcc; font-size:15px; line-height:1.6;">تم إرسال رابط تحقق إلى بريدك الإلكتروني. يرجى تفعيل الحساب من الإيميل ثم الضغط على الزر أدناه للدخول.</p>
-        <button onclick="checkEmailVerified()" class="btn-main">تم التفعيل، دخول</button>
+        <h2 style="color:var(--pink);">تفعيل الحساب</h2>
+        <p style="margin:20px 0; color:#00ffcc; line-height:1.6;">أرسلنا رابط تفعيل لإيميلك. بعد الضغط على الرابط، اضغط على الزر أدناه للدخول:</p>
+        <button onclick="checkEmailVerified()" class="btn-main">لقد قمت بالتفعيل، أدخلني</button>
     </div>
 </section>
 
 <section id="home-page">
-    <div class="hero">
-        <img src="https://i.imgur.com/K3pWpXG.png" alt="Xeno Logo" class="hero-logo">
-        <h1>XENO EXECUTOR</h1>
-        <p>الأداة الأسرع والأكثر أماناً لتنفيذ السكربتات في روبلوكس، احصل عليها الآن!</p>
-    </div>
-    
-    <div class="products-grid">
-        <div class="product-card" onclick="showProduct('xeno')">
-            <img src="https://i.imgur.com/K3pWpXG.png" alt="Xeno Product" class="product-img">
-            <h3>XENO EXECUTOR V2</h3>
-            <div class="star-rating">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-            </div>
-            <p class="product-price">0.00 SAR</p>
-            <button class="btn-main" onclick="event.stopPropagation(); addToCart('XENO EXECUTOR V2', '0.00')">إضافة للسلة</button>
-        </div>
+    <h1 style="margin-bottom:50px; font-weight:900; color:var(--pink); font-size:40px;">المنتجات المميزة</h1>
+    <div style="background:var(--card); padding:30px; border-radius:20px; width:300px; text-align:center; border:1px solid #333; cursor:pointer; transition:0.3s;" onclick="show('details')">
+        <img src="https://i.imgur.com/K3pWpXG.png" style="width:100%; border-radius:15px; margin-bottom:15px;">
+        <h3 style="margin-bottom:10px;">XENO EXECUTOR V2</h3>
+        <p class="price-tag">0.00 SAR</p>
+        <button class="btn-main">عرض التفاصيل</button>
     </div>
 </section>
 
 <section id="details-page">
-    <div class="details-container">
-        <div class="details-info">
-            <h1 class="details-title">XENO EXECUTOR V2</h1>
-            <div class="star-rating" style="font-size:18px;">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> (بناءً على 125 تقييم)
+    <div class="product-page-container">
+        <div class="p-info-side">
+            <h1 style="color:var(--pink); font-weight:900;">XENO EXECUTOR V2</h1>
+            <div style="color:#ffcc00;">⭐⭐⭐⭐⭐ (150+ تقييم)</div>
+            <p class="price-tag">0.00 SAR</p>
+            <div style="color:#ccc; line-height:1.8;">
+                <b>المميزات:</b><br>
+                • تنفيذ فوري للسكربتات المعقدة.<br>
+                • حماية بنظام الـ Kernel ضد الكشف.<br>
+                • دعم فني مجاني عبر دسكورد VOID.<br>
+                • واجهة مستخدم حديثة وسهلة.
             </div>
-            <p class="details-price">0.00 SAR</p>
-            
-            <div class="details-description">
-                <b>الوصف والمميزات:</b><br><br>
-                <ul>
-                    <li>دعم كامل لجميع سكربتات روبلوكس الحديثة.</li>
-                    <li>سرعة فائقة في التنفيذ بدون لاق.</li>
-                    <li>حماية متقدمة ضد البان (Anti-Ban).</li>
-                    <li>واجهة مستخدم أنيقة وسهلة الاستخدام.</li>
-                    <li>تحديثات تلقائية مجانية.</li>
-                </ul>
-            </div>
-            
-            <button class="btn-main" onclick="addToCart('XENO EXECUTOR V2', '0.00')" style="background:var(--purple);">إضافة للسلة - 0.00 SAR</button>
+            <button class="btn-main" onclick="addToCart('XENO EXECUTOR V2', '0.00')">إضافة للسلة</button>
         </div>
-        
-        <div class="details-img-container">
-            <img src="https://i.imgur.com/K3pWpXG.png" alt="Xeno Detail" class="details-img">
+        <div class="p-image-side">
+            <img src="https://i.imgur.com/K3pWpXG.png" class="main-img">
         </div>
     </div>
-    
-    <div class="review-section">
-        <div class="review-input-group">
-            <h4>أضف تقييمك</h4>
-            <div class="star-rating" id="starInput" style="font-size:24px; cursor:pointer;">
+
+    <div class="reviews-box">
+        <h2 style="margin-bottom:30px;">تقييمات المستخدمين</h2>
+        <div style="background:var(--card); padding:30px; border-radius:20px; margin-bottom:30px; border:1px solid #444;">
+            <h4>أضف تقييمك:</h4>
+            <div class="star-input" id="starContainer">
                 <i class="far fa-star" onclick="setStars(1)"></i><i class="far fa-star" onclick="setStars(2)"></i><i class="far fa-star" onclick="setStars(3)"></i><i class="far fa-star" onclick="setStars(4)"></i><i class="far fa-star" onclick="setStars(5)"></i>
             </div>
-            <input type="text" id="revTxt" class="rev-input" placeholder="اكتب رأيك هنا (مثلاً: أداة خرافية وعملية)">
-            <button class="btn-main" style="width:150px; padding:12px; float:left;" onclick="addReview()">نشر</button>
-            <div style="clear:both;"></div>
+            <input type="text" id="revInputText" class="auth-input" placeholder="اكتب رأيك هنا...">
+            <button class="btn-main" style="width:150px;" onclick="postReview()">نشر</button>
         </div>
-        
-        <h3 style="margin-bottom:30px;">تقييمات العملاء</h3>
-        <div id="revList"></div>
+        <div id="reviewsList"></div>
     </div>
 </section>
 
 <section id="checkout-page">
-    <div class="checkout-container">
-        <h2>إتمام الدفع</h2>
-        <div class="payment-icons">
-            <i class="fab fa-apple-pay"></i>
-            <i class="fab fa-cc-visa"></i>
-            <i class="fab fa-cc-mastercard"></i>
-            <i class="fas fa-credit-card"></i>
-        </div>
-        <input type="text" class="auth-input" placeholder="رقم البطاقة (مثلاً: 1234 5678 9101 1121)">
-        <input type="text" class="auth-input" placeholder="الاسم على البطاقة">
-        <div style="display:flex; gap:15px;">
+    <div class="auth-container">
+        <h2 style="color:var(--pink); margin-bottom:20px;">بيانات الدفع</h2>
+        <input type="text" class="auth-input" placeholder="اسم حامل البطاقة">
+        <input type="text" class="auth-input" placeholder="رقم البطاقة">
+        <div style="display:flex; gap:10px;">
             <input type="text" class="auth-input" placeholder="MM/YY">
-            <input type="text" class="auth-input" placeholder="CVC">
+            <input type="text" class="auth-input" placeholder="CVV">
         </div>
-        <button class="btn-main" onclick="startDownloadProcess()">تأكيد الدفع 0.00 SAR</button>
+        <button class="btn-main" onclick="processPayment()">تأكيد عملية الشراء</button>
     </div>
-    
-    <div id="downloadBox" class="download-box" style="display:none; text-align:center;">
-        <h2>📜 شروط استخدام XENO</h2>
-        <p>1. يمنع استخدام الأداة في الأغراض التخريبية.</p>
-        <p>2. المتجر غير مسؤول عن البان الناتج عن سوء الاستخدام.</p>
-        <p>3. يمنع مشاركة الملف مع أي شخص آخر.</p>
-        <hr style="width:100%; border:0.5px solid #333; margin-bottom:20px;">
-        <p style="color:var(--pink);">سيتم تحويلك للتحميل خلال:</p>
-        <h1 id="timer" style="font-size:60px; color:var(--text-main);">5</h1>
+
+    <div id="downloadBox" style="display:none; text-align:center; margin-top:30px; background:var(--card); padding:40px; border-radius:25px; border:2px solid var(--pink);">
+        <h2 style="color:var(--pink);">📜 شروط الملكية والاستخدام</h2>
+        <p style="margin:15px 0; color:#aaa;">هذا المنتج ملك لـ <b>VOID SWIFT</b>. يمنع منعا باتا إعادة بيعه أو مشاركته. المتجر غير مسؤول عن سوء الاستخدام.</p>
+        <p>سيتم تحويلك للتحميل خلال:</p>
+        <h1 id="timer" style="font-size:60px;">5</h1>
     </div>
 </section>
 
 <section id="policy-page">
-    <div class="policy-container">
-        <div class="policy-item">
-            <div class="policy-title"><i class="fas fa-shield-alt"></i> سياسة الاستخدام والأمان</div>
-            <div class="policy-text">
-                نحن ملتزمون بتوفير أداة آمنة ومحمية. يمنع استخدام Xeno للتخريب أو إيذاء الآخرين. بياناتك محفوظة ومشفرة لدينا، ونحن نستخدم أفضل معايير الأمان لحماية حسابك.
-            </div>
-        </div>
-        
-        <div class="policy-item">
-            <div class="policy-title"><i class="fas fa-undo-alt"></i> سياسة الاستبدال والاسترجاع</div>
-            <div class="policy-text">
-                المنتجات الرقمية غير قابلة للاسترجاع بعد التحميل، إلا في حالة وجود عطل فني في الأداة يمنع استخدامها تماماً ولم نتمكن من إصلاحه خلال 7 أيام.
-            </div>
-        </div>
-
-        <div class="policy-item">
-            <div class="policy-title"><i class="fas fa-copyright"></i> حقوق الملكية الفكرية</div>
-            <div class="policy-text">
-                جميع الحقوق الفكرية للأداة Xeno تعود لمتجر VOID SWIFT. يمنع تماماً محاولة فك تشفير الملف، إعادة هندسته، أو إعادة بيعه دون إذن خطي مسبق.
-            </div>
-        </div>
+    <div style="background:var(--card); padding:40px; border-radius:20px; width:100%; max-width:900px; border:1px solid #333;">
+        <h2 style="color:var(--pink); margin-bottom:20px;">حقوق الملكية والسياسة</h2>
+        <p>• جميع الحقوق محفوظة لـ <b>XENO</b> تحت إدارة <b>VOID SWIFT</b>.</p>
+        <p>• لا يسمح باسترجاع الأموال بعد استلام المنتج الرقمي.</p>
+        <p>• يمنع محاولة فك تشفير الأداة أو التعديل عليها.</p>
     </div>
 </section>
 
 <section id="faq-page">
-    <div class="faq-container">
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                كيف أقوم بتفعيل الأداة بعد الشراء؟
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                بعد إتمام الدفع، ستتلقى رابط تحميل الملف. قم بتشغيله، ثم استخدم نفس البريد الإلكتروني الذي سجلت به في المتجر لتسجيل الدخول وتفعيل الأداة تلقائياً.
-            </div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                هل استخدام Xeno يعرض حسابي للبان؟
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                نحن نستخدم أفضل تقنيات الحماية لتجنب الكشف، ولكن استخدام أي أداة طرف ثالث يحمل خطراً. نوصي باستخدامه بمسؤولية وعلى حسابات ثانوية.
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                هل يوجد دعم فني إذا واجهت مشكلة؟
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                نعم، فريق الدعم متاح 24/7 عبر الدسكورد الخاص بنا. يمكنك فتح تذكرة دعم وسنقوم بحل مشكلتك في أسرع وقت.
-            </div>
-        </div>
+    <h2 style="margin-bottom:40px; color:var(--pink); font-size:32px;">الأسئلة الشائعة</h2>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">هل الأداة تدعم آخر تحديث لروبلوكس؟ <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-a">نعم، نحن نقوم بتحديث الأداة فور صدور أي تحديث جديد من اللعبة.</div>
     </div>
-    
-    <div class="ownership-box">
-        <div class="ownership-title"><i class="fas fa-copyright"></i> ملكية المتجر XENO EXECUTOR</div>
-        <div class="ownership-text">
-            متجر VOID SWIFT هو المالك والمطور الوحيد والشرعي للأداة Xeno Executor. جميع الحقوق محفوظة، ونحن نضمن لك جودة وأمان المنتج المقدم.
-        </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q">ماذا أفعل إذا واجهت مشكلة فنية؟ <i class="fas fa-chevron-down"></i></div>
+        <div class="faq-a">يمكنك الانضمام لدسكورد VOID وفتح تذكرة دعم وسيقوم الفريق بمساعدتك.</div>
     </div>
 </section>
 
+<div class="cart-sidebar" id="cartSidebar">
+    <div onclick="toggleCart()" style="cursor:pointer; font-size:25px; color:var(--pink);"><i class="fas fa-times"></i></div>
+    <h2 style="margin:20px 0;">سلة المشتريات</h2>
+    <div id="cartItemsList"><p style="color:gray; text-align:center;">السلة فارغة</p></div>
+    <div style="position:absolute; bottom:30px; width:calc(100% - 80px);">
+        <button class="btn-main" onclick="show('checkout')">الذهاب للدفع</button>
+    </div>
+</div>
+
 <footer id="footer">
-    <div class="footer-grid">
-        <div class="footer-col">
-            <h4 class="logo">VOID SWIFT</h4>
-            <p style="color:var(--text-muted); font-size:14px; line-height:1.6;">وجهتك الأولى للحصول على أفضل وأقوى أدوات روبلوكس في العالم العربي.</p>
-        </div>
-        <div class="footer-col">
-            <h4>روابط سريعة</h4>
-            <a onclick="show('home')" class="footer-link">الرئيسية</a>
-            <a onclick="show('policy')" class="footer-link">السياسة</a>
-            <a onclick="show('faq')" class="footer-link">الأسئلة الشائعة</a>
-        </div>
-        <div class="footer-col">
-            <h4>تواصل معنا</h4>
-            <a href="mailto:swiftsa123a@gmail.com" class="footer-link"><i class="fas fa-envelope"></i> البريد الإلكتروني</a>
-            <a href="https://discord.gg/VScn6AgZhc" target="_blank" class="footer-link"><i class="fab fa-discord"></i> دسكورد VOID</a>
+    <div style="display:flex; justify-content:space-around; align-items:center; flex-wrap:wrap; gap:30px;">
+        <div><h2 class="logo">VOID SWIFT</h2><p style="color:gray;">احترافية، أمان، وسرعة.</p></div>
+        <div>
+            <a href="https://discord.gg/VScn6AgZhc" target="_blank" style="color:var(--pink); text-decoration:none; font-size:20px;"><i class="fab fa-discord"></i> انضم لدسكورد VOID</a>
         </div>
     </div>
-    <div class="footer-bottom">
-        &copy; 2024 VOID SWIFT. جميع الحقوق محفوظة لـ XENO EXECUTOR.
-    </div>
+    <p style="margin-top:40px; color:#444;">&copy; 2026 VOID SWIFT. جميع الحقوق محفوظة.</p>
 </footer>
 
 <script>
-    // --- YouTube API (for Background Video/Audio) ---
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
+    // --- YouTube API ---
+    var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
     var player;
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('youtube-player', {
-            height: '0',
-            width: '0',
-            videoId: 'wkpmXPFG-ss', // رابط شحط 217
+            height: '0', width: '0', videoId: 'wkpmXPFG-ss',
             playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'wkpmXPFG-ss' },
-            events: {
-                'onReady': onPlayerReady
-            }
+            events: { 'onReady': function(e) { document.addEventListener('click', () => e.target.playVideo(), {once:true}); } }
         });
     }
 
-    function onPlayerReady(event) {
-        // تشغيل مع أول تفاعل مع الصفحة
-        document.addEventListener('click', function() {
-            event.target.playVideo();
-        }, { once: true });
-    }
-
-    // --- Firebase Configuration & Initialization ---
+    // --- Firebase ---
     const firebaseConfig = { apiKey: "AIzaSyCWVnf3CKX2d8wI0NPATsqkLhmBabCgaB4", authDomain: "swiftvoid-3e5a6.firebaseapp.com", databaseURL: "https://swiftvoid-3e5a6-default-rtdb.firebaseio.com", projectId: "swiftvoid-3e5a6", storageBucket: "swiftvoid-3e5a6.firebasestorage.app", messagingSenderId: "375536130124", appId: "1:375536130124:web:a4ff59516a08b66da2fce9" };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(); const db = firebase.database();
 
-    // --- State Variables ---
-    let isSignUp = false; let cartCount = 0; let totalPrice = 0; let selectedStars = 0;
+    let isSignUp = false; let cartCount = 0; let userStars = 0;
 
-    // --- Site Alert ---
-    function customAlert(message) {
-        const alert = document.getElementById('siteAlert');
-        alert.innerText = message;
-        alert.style.display = 'block';
-        setTimeout(() => alert.style.display = 'none', 4000);
-    }
+    function customAlert(m) { const a = document.getElementById('siteAlert'); a.innerText = m; a.style.display = 'block'; setTimeout(() => a.style.display = 'none', 4000); }
 
-    // --- Auth Functions ---
-    function toggleAuth() {
-        isSignUp = !isSignUp;
-        document.getElementById('authTitle').innerText = isSignUp ? "إنشاء حساب في Void Swift" : "تسجيل دخول للمتجر";
-        document.getElementById('mainBtn').innerText = isSignUp ? "إنشاء حساب وإرسال التفعيل" : "دخول للمتجر";
-        document.getElementById('toggleText').innerText = isSignUp ? "لديك حساب؟ سجل دخولك" : "ليس لديك حساب؟ إنشاء حساب جديد؟";
+    function toggleAuth() { 
+        isSignUp = !isSignUp; 
+        document.getElementById('authTitle').innerText = isSignUp ? "إنشاء حساب جديد" : "تسجيل الدخول"; 
+        document.getElementById('mainBtn').innerText = isSignUp ? "إنشاء وإرسال الرابط" : "دخول للمتجر";
+        document.getElementById('toggleText').innerText = isSignUp ? "عندك حساب؟ سجل دخول" : "إنشاء حساب جديد؟";
     }
 
     async function handleAuth() {
         const email = document.getElementById('uEmail').value;
         const pass = document.getElementById('uPass').value;
-        if(!email.includes('@')) return customAlert("خطأ: يرجى إدخال إيميل صحيح!");
-        if(pass.length < 6) return customAlert("خطأ: الباسورد يجب أن يكون 6 خانات أو أكثر!");
-
+        if(!email || !pass) return customAlert("املأ البيانات كاملة!");
         const actionCodeSettings = { url: 'https://swiftvoid-3e5a6.firebaseapp.com', handleCodeInApp: true };
 
         try {
             if(isSignUp) {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-                await userCredential.user.sendEmailVerification(actionCodeSettings);
+                const uc = await auth.createUserWithEmailAndPassword(email, pass);
+                await uc.user.sendEmailVerification(actionCodeSettings);
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('verifyStep').style.display = 'block';
-                customAlert("تم إنشاء الحساب! أرسلنا رابط التفعيل على إيميلك.");
+                customAlert("تم! شيك إيميلك ورابط التفعيل");
             } else {
-                const userCredential = await auth.signInWithEmailAndPassword(email, pass);
-                await userCredential.user.reload();
-                if(auth.currentUser.emailVerified) {
-                    if (player) player.stopVideo(); 
-                    startApp();
-                } else {
-                    await auth.signOut();
-                    customAlert("لازم تفعل حسابك من الرابط اللي جاك بالإيميل أولاً!");
-                }
+                const uc = await auth.signInWithEmailAndPassword(email, pass);
+                await uc.user.reload();
+                if(auth.currentUser.emailVerified) { stopMusicAndStart(); }
+                else { await auth.signOut(); customAlert("فعل حسابك من الإيميل أولاً!"); }
             }
-        } catch (error) {
-            if(error.code === "auth/wrong-password") customAlert("خطأ: كلمة المرور خطأ!");
-            else if(error.code === "auth/user-not-found") customAlert("خطأ: الحساب غير موجود!");
-            else customAlert("خطأ: " + error.message);
-        }
+        } catch (e) { customAlert(e.message); }
     }
 
-    async function checkEmailVerified() {
-        if(!auth.currentUser) return;
-        await auth.currentUser.reload();
-        if(auth.currentUser.emailVerified) {
-            if (player) player.stopVideo(); 
-            startApp();
-        } else {
-            customAlert("للحين ما فعلت الحساب.. شيك البريد (Spam)");
-        }
-    }
-
-    function startApp() {
-        document.getElementById('matrixBgTag').classList.remove('matrix-bg');
+    function stopMusicAndStart() {
+        if(player) player.stopVideo(); // إيقاف الأغنية فوراً
+        document.getElementById('bgLayer').classList.remove('matrix-bg');
         document.getElementById('auth-page').classList.remove('active');
         document.getElementById('navbar').style.display = 'flex';
         document.getElementById('footer').style.display = 'block';
         show('home'); loadReviews();
     }
 
-    // --- Product & Section Functions ---
-    function show(id) {
-        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
-        document.getElementById(id + '-page').classList.add('active');
-        // l = document.querySelector(`.nav-links li[onclick="show('${id}')"]`); if(l) l.classList.add('active');
-        window.scrollTo(0, 0); toggleCart(true); // Close cart on page change
+    async function checkEmailVerified() {
+        if(!auth.currentUser) return;
+        await auth.currentUser.reload();
+        if(auth.currentUser.emailVerified) stopMusicAndStart();
+        else customAlert("ما فعلت الحساب للحين.. شيك الـ Spam");
     }
 
-    function showProduct(prod) { if(prod === 'xeno') show('details'); }
-
-    // --- Cart Functions ---
-    function toggleCart(forceClose) {
-        const cart = document.getElementById('cartSidebar');
-        if(forceClose) cart.classList.remove('open');
-        else cart.classList.toggle('open');
+    function show(id) { 
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active')); 
+        document.getElementById(id + '-page').classList.add('active'); 
+        window.scrollTo(0,0); toggleCart(true); 
     }
 
-    function addToCart(name, priceStr) {
-        const price = parseFloat(priceStr);
-        cartCount++; totalPrice += price;
-        updateCart();
-        const list = document.getElementById('cartList');
-        document.getElementById('emptyText').style.display = 'none';
-        
-        const itemRow = document.createElement('div');
-        itemRow.className = 'cart-item-row';
-        itemRow.innerHTML = `<div class="cart-item-info"><span>${name}</span><span>${price.toFixed(2)} SAR</span></div> <i class="fas fa-trash-alt remove-item" onclick="removeItem(this, ${price})"></i>`;
-        list.appendChild(itemRow);
-        customAlert("تمت إضافة XENO EXECUTOR للسلة!");
+    function toggleCart(force) { 
+        const c = document.getElementById('cartSidebar'); 
+        if(force) c.classList.remove('open'); else c.classList.toggle('open'); 
     }
 
-    function removeItem(el, price) { cartCount--; totalPrice -= price; el.closest('.cart-item-row').remove(); updateCart(); if(cartCount === 0) document.getElementById('emptyText').style.display = 'block'; }
-    function updateCart() { document.getElementById('cartBadge').innerText = cartCount; document.getElementById('cartTotal').innerText = `الإجمالي: ${totalPrice.toFixed(2)} SAR`; }
-
-    function goToCheckout() {
-        if (cartCount === 0) customAlert("السلة فارغة! أضف منتج أولاً.");
-        else show('checkout');
+    function addToCart(n, p) {
+        cartCount++;
+        document.getElementById('cartBadge').innerText = cartCount;
+        document.getElementById('cartItemsList').innerHTML = `<div style="background:#000; padding:15px; border-radius:10px; border:1px solid #333; margin-top:10px; display:flex; justify-content:space-between;"><span>${n}</span><span>${p} SAR</span></div>`;
+        customAlert("تمت الإضافة للسلة!");
     }
 
-    function startDownloadProcess() {
-        document.getElementById('paymentFields').style.display = 'none';
-        document.getElementById('downloadBox').style.display = 'flex';
-        let timeLeft = 5;
-        const countdown = setInterval(() => {
-            timeLeft--;
-            document.getElementById('timer').innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                window.location.href = "https://www.mediafire.com/file/igcgo6ke4ztwgv4/Xeno-v1.3.30.zip/file"; 
-            }
+    function processPayment() {
+        document.querySelector('#checkout-page .auth-container').style.display = 'none';
+        document.getElementById('downloadBox').style.display = 'block';
+        let t = 5;
+        const iv = setInterval(() => {
+            t--; document.getElementById('timer').innerText = t;
+            if(t <= 0) { clearInterval(iv); window.location.href = "https://www.mediafire.com/file/igcgo6ke4ztwgv4/Xeno-v1.3.30.zip/file"; }
         }, 1000);
     }
 
-    // --- Review Functions ---
-    function setStars(n) { selectedStars = n; const stars = document.getElementById('starInput').children; for(let i=0; i<5; i++) stars[i].className = (i < n) ? 'fas fa-star' : 'far fa-star'; }
-    function addReview() { const text = document.getElementById('revTxt').value; if(!text || selectedStars === 0) return customAlert("اكتب رأيك واختر التقييم بالنجوم!"); db.ref('store_reviews').push({ text, stars: selectedStars, time: Date.now() }); document.getElementById('revTxt').value = ""; setStars(0); customAlert("شكراً لتقييمك! تم نشره."); }
+    // --- Reviews Logic ---
+    function setStars(n) {
+        userStars = n;
+        const stars = document.getElementById('starContainer').children;
+        for(let i=0; i<5; i++) stars[i].className = (i < n) ? "fas fa-star" : "far fa-star";
+    }
+
+    function postReview() {
+        const text = document.getElementById('revInputText').value;
+        if(!text || userStars === 0) return customAlert("اكتب تقييمك واختر النجوم!");
+        db.ref('reviews').push({ text, stars: userStars });
+        document.getElementById('revInputText').value = ""; setStars(0);
+        customAlert("شكراً لتقييمك!");
+    }
+
     function loadReviews() {
-        db.ref('store_reviews').on('value', snap => {
-            const list = document.getElementById('revList'); list.innerHTML = "";
+        db.ref('reviews').on('value', snap => {
+            const list = document.getElementById('reviewsList'); list.innerHTML = "";
             if(snap.val()) {
-                Object.values(snap.val()).sort((a,b) => b.time - a.time).forEach(r => {
-                    let s = ""; for(let i=0; i<r.stars; i++) s += '<i class="fas fa-star" style="color:#ffcc00; font-size:13px;"></i>';
-                    list.innerHTML += `<div class="rev-card"><div class="rev-card-header"><b>مستخدم VOID Swift</b><div>${s}</div></div><p style="color:#ccc; font-size:15px; line-height:1.6;">${r.text}</p></div>`;
+                Object.values(snap.val()).reverse().forEach(r => {
+                    let s = ""; for(let i=0; i<r.stars; i++) s += "⭐";
+                    list.innerHTML += `<div class="rev-card"><b>مستخدم VOID</b> <span style="font-size:12px;">${s}</span><p>${r.text}</p></div>`;
                 });
             }
         });
     }
-
-    // --- FAQ Toggle ---
-    function toggleFAQ(el) { el.closest('.faq-item').classList.toggle('open'); }
-
 </script>
 </body>
 </html>
